@@ -18,10 +18,16 @@ public class User{
     private String userFirstName;
     @Column(name= "second_name",nullable = false,  length = 32) //unique = true,
     private String userSecondName;
+
+    @Column(name="username", nullable = false,  length = 32)
+    private String username;
+
     @Column(name = "team")
     @Enumerated(EnumType.STRING)
     private Team team;
-//    private String password;
+
+    @Column(name="password",nullable = false,  length = 10)
+    private String password;
 
 
     @OneToMany //(fetch = FetchType.EAGER)??
@@ -33,11 +39,24 @@ public class User{
 
     private List<Request> requestsList;
 
-    public User(UUID id, String userFirstName, String userSecondName, Team team) {
+    @OneToMany //(fetch = FetchType.EAGER)??
+            (
+                    mappedBy ="user",
+                    cascade = CascadeType.ALL,
+                    orphanRemoval = true
+            )
+
+    private List<Response> responsesList;
+
+
+
+    public User(UUID id, String userFirstName, String userSecondName, String username, Team team, String password) {
         this.id = id;
         this.userFirstName = userFirstName;
         this.userSecondName = userSecondName;
+        this.username =username;
         this.team = team;
+        this.password= password;
     }
 
     public UUID getId() {
@@ -71,4 +90,38 @@ public class User{
     public void setTeam(Team team) {
         this.team = team;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Request> getRequestsList() {
+        return requestsList;
+    }
+
+    public void setRequestsList(List<Request> requestsList) {
+        this.requestsList = requestsList;
+    }
+
+    public List<Response> getResponsesList() {
+        return responsesList;
+    }
+
+    public void setResponsesList(List<Response> responsesList) {
+        this.responsesList = responsesList;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public User(){};
 }

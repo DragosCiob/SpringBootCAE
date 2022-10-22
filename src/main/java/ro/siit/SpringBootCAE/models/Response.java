@@ -23,11 +23,17 @@ public class Response {
     @JoinColumn(name="request_id")
     private Request request;
 
-    public Response(UUID id, ResponseType responseType, String comment, Request request) {
+    @ManyToOne
+    @JoinColumn(name="response_owner")
+    private User user;
+
+
+    public Response(UUID id, ResponseType responseType, String comment, Request request, User user) {
         this.id = id;
         this.responseType = responseType;
         this.comment = comment;
         this.request = request;
+        this.user = user;
     }
 
     public UUID getId() {
@@ -60,5 +66,13 @@ public class Response {
 
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
