@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    @Query(value="SELECT u FROM users u WHERE u.username" ,nativeQuery = true)
+    @Query(value="SELECT u FROM Users u WHERE u.username=?1" ,nativeQuery = false)
     User findByUsername(String username);
 
 }

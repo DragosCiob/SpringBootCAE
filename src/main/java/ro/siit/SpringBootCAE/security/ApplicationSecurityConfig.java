@@ -36,7 +36,7 @@ public class ApplicationSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-
+                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests((authz) -> {
                     try {
                         authz

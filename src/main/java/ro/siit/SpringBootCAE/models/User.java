@@ -26,7 +26,7 @@ public class User{
     @Enumerated(EnumType.STRING)
     private Team team;
 
-    @Column(name="password",nullable = false,  length = 10)
+    @Column(name="password",nullable = false,  length = 64)
     private String password;
 
 
