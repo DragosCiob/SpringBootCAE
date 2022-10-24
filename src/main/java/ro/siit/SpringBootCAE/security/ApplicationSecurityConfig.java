@@ -44,11 +44,14 @@ public class ApplicationSecurityConfig {
                                 .anyRequest().permitAll()
                                 .and()
                                 .formLogin()
+                                .loginPage("/loginForm")
+                                .loginProcessingUrl("/login")
+                                .failureUrl("/login-error")
                                 .usernameParameter("username")
-                                .defaultSuccessUrl("/requests")
+                                .defaultSuccessUrl("/requests/")
                                 .permitAll()
                                 .and()
-                                .logout().logoutSuccessUrl("/loginForm").permitAll();
+                                .logout().logoutSuccessUrl("/login").permitAll();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -57,69 +60,6 @@ public class ApplicationSecurityConfig {
                 // .httpBasic(withDefaults());
         return http.build();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//            .authorizeRequests()
-//                .antMatchers("/anonymous").anonymous()
-//                .antMatchers("/","/login*").permitAll()
-//                .antMatchers("/assets/css/**", "assets/js/**", "/images/**").permitAll()
-//                .antMatchers("/index*").permitAll()
-//                .anyRequest().authenticated()
-//
-//                .and()
-//                .formLogin()
-//                .loginPage("/loginForm")
-//                .loginProcessingUrl("/perform_login")
-//                .defaultSuccessUrl("/logged", true);
-//
-//
-//
-//        return http.build();
-//    }
-//
-//
-//        protected void configure(final AuthenticationManagerBuilder auth ) throws Exception{
-//        auth.inMemoryAuthentication()
-//                .withUser( "dragos").password("pass").roles("USER");
-//    }
-//
-////    protected void configure(final AuthenticationManagerBuilder auth ) throws Exception{
-////        auth.inMemoryAuthentication()
-////                .withUser( "dragos").password(passwordEncoder().encode("pass")).roles("USER");
-////    }
-////////@Bean
-//////    private PasswordEncoder passwordEncoder() {
-//////        return new BCryptPasswordEncoder();
-//////    }
 
 
 }
