@@ -34,11 +34,11 @@ public class Request{
     private List<Response> responseListList;
 
 
-    public Request(UUID id, String requestName, String text, User owner) {
+    public Request(UUID id, String requestName, String text/*User owner*/ ) {
         this.id = id;
         this.requestName = requestName;
         this.text = text;
-        this.owner = owner;
+        /*this.owner = owner*/;
     }
 
     public UUID getId() {
