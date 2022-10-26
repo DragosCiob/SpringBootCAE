@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>CAE</title>
+</head>
+<body>
+<h1> this is home page, welcome! </h1>
+<p><span th:text="${info}"> my App </span></p>
+
+<div>
+
+<!--    <button type="button" th:action="@{/login}" >Login</button>-->
+
+    <form action="#" th:action="@{/login}">
+        <button type="submit">Login</button>
+    </form>
+<!--    <form action="#" th:action="@{/login}">-->
+<!--        <button type="submit">Create an account</button>-->
+<!--    </form>-->
+
+
+
+</div>
+</body>
+</html>
