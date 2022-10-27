@@ -15,7 +15,6 @@ public class HomePageController {
         return "home";
     }
 
-
     // Login form
     @GetMapping( "/login")
     public String logInPage(Model model){
@@ -29,7 +28,6 @@ public class HomePageController {
         model.addAttribute("loginError", true);
         return "loginForm";
     }
-
 
 
 }

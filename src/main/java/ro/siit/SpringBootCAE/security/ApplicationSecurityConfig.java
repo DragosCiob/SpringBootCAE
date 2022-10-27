@@ -44,7 +44,7 @@ public class ApplicationSecurityConfig {
                                 .anyRequest().permitAll()
                                 .and()
                                 .formLogin()
-                                .loginPage("/loginForm")
+                                .loginPage("/login")
                                 .loginProcessingUrl("/login")
                                 .failureUrl("/login-error")
                                 .usernameParameter("username")

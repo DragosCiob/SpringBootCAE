@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml"  >
 <head>
   <title>W3.CSS Template</title>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-  <link rel="stylesheet" href="UI.css">
+  <link rel="stylesheet" th:href="@{/css/UI.css}"/>
 
 
   <style>
@@ -59,16 +59,18 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <div class="w3-bar">
 
-    <button class="w3-bar-item w3-button w3-amber w3-padding-16" style="width:25%">
-      <div class="w3-left"><i class="fa fa-exclamation-circle w3-xxxlarge"></i></div>
+    <form action="#" th:action="@{add}">
+      <button class="w3-bar-item w3-button w3-amber w3-padding-16" style="width:25%">
+        <div class="w3-left"><i class="fa fa-exclamation-circle w3-xxxlarge"></i></div>
 
-<!--      <div class="w3-right">-->
-<!--        <h3>CFD</h3>-->
-<!--      </div>-->
+  <!--      <div class="w3-right">-->
+  <!--        <h3>CFD</h3>-->
+  <!--      </div>-->
 
-      <div class="w3-clear"></div>
-      <h4>New Requests</h4>
-    </button>
+        <div class="w3-clear"></div>
+        <h4>New Requests</h4>
+      </button>
+    </form>
 
     <button class="w3-bar-item w3-button w3-blue w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-database w3-xxxlarge"></i></div>
@@ -79,13 +81,15 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <h4>My Requests</h4>
     </button>
 
+
+
     <button class="w3-bar-item w3-button w3-teal w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-bar-chart-o w3-xxxlarge"></i></div>
 <!--      <div class="w3-right">-->
 <!--        <h3>Statistics</h3>-->
 <!--      </div>-->
       <div class="w3-clear"></div>
-      <h4>Projects Overview-Statistics</h4>
+      <h4>Projects Overview</h4>
     </button>
 
     <button class="w3-bar-item w3-button w3-orange w3-padding-16" style="width:25%">
@@ -100,38 +104,33 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </div>
 
   <div class="w3-panel">
-    <div class="w3-twothird">
+
       <div class="w3-twothird">
-        <h5>New Requests</h5>
-        <table class="w3-table w3-striped w3-white">
+        <h5> </h5>
+
+        <table class="w3-table w3-striped w3-white" >
+          <thead>
           <tr>
-            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-            <td>Request 1</td>
-            <td><i>10 mins</i></td>
+            <th scope="col">#</th>
+            <th scope="col">Request Name</th>
+            <th scope="col">Description</th>
           </tr>
-          <tr>
-            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-            <td>Request 2</td>
-            <td><i>15 mins</i></td>
+          </thead>
+          <tbody>
+          <tr th:each="request, iter:${requests}"  >
+            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large"></i> >1 </th>
+            <td th:text="${request.requestName}"></td>
+            <td th:text="${request.text}" ></td>
+            <td>
+              <form action="#" th:action="@{/requests/evaluate}">
+                <button type="submit">evaluate</button>
+              </form>
+
+            </td>
           </tr>
-          <tr>
-            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-            <td>Request 3</td>
-            <td><i>17 mins</i></td>
-          </tr>
-          <tr>
-            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-            <td>Request 4</td>
-            <td><i>25 mins</i></td>
-          </tr>
-          <tr>
-            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-            <td>Request 5</td>
-            <td><i>28 mins</i></td>
-          </tr>
-          <tr>
+          </tbody>
         </table>
-      </div>
+
     </div>
 
   </div>
