@@ -28,11 +28,11 @@ public class Response {
     private User user;
 
 
-    public Response(UUID id, ResponseType responseType, String comment /*Request request*/ /* User user */ ) {
+    public Response(UUID id, ResponseType responseType, String comment, Request request /* User user */ ) {
         this.id = id;
         this.responseType = responseType;
         this.comment = comment;
-        /*this.request = request;*/
+        this.request = request;
         /*this.user = user;*/
     }
 

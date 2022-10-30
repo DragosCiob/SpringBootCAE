@@ -122,10 +122,9 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
             <td th:text="${request.requestName}"></td>
             <td th:text="${request.text}" ></td>
             <td>
-              <form action="#" th:action="@{/requests/evaluate}">
-                <button type="submit">evaluate</button>
-              </form>
-
+<!--              <form action="#" th:action="@{/requests/evaluate}">-->
+<!--              </form>-->
+              <a class="btn btn-outline-primary" th:href="@{/requests/evaluate/{id}(id=${request.id})}">evaluate</a>
             </td>
           </tr>
           </tbody>

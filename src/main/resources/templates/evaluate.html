@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Evaluate</title>
@@ -7,11 +7,12 @@
 
 
 <body>
-<h1>Add response</h1>
-<form method="post" action="/requests/evaluate">
+<h1> Evaluate </h1>
+<form method="post" th:action="@{/requests/evaluate}">
 
   <input type="text" name="response_type" placeholder="response_type">
   <input type="text" name="response_comment" placeholder="response_comment">
+    <input type="hidden" th:value="${request.id}" name="request_id">
 
   <input type="submit" value="Add response">
 </form>

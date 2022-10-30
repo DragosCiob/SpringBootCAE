@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ro.siit.SpringBootCAE.models.CustomUserDetails;
 import ro.siit.SpringBootCAE.models.Request;
@@ -18,7 +15,10 @@ import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/requests")
@@ -39,8 +39,6 @@ private IAuthenticationFacade authenticationFacade;
      return "UI";
     }
 
-
-
     @GetMapping("/add")
     public String addRequestForm(Model model) {
         return "/addForm";
@@ -60,18 +58,29 @@ private IAuthenticationFacade authenticationFacade;
     }
 
 
-    @GetMapping("/evaluate")
-    public String evaluateForm(Model model) {
-        return "/evaluate";
+//    @GetMapping("/evaluate")
+//    public String evaluateForm(Model model) {
+//        return "/evaluate";
+//    }
+
+
+    @GetMapping("/evaluate/{id}")
+    public String evaluateRequest(Model model, @PathVariable("id") UUID requestId) {
+        Optional<Request> optionalRequest = requestsRepository.findById(requestId);
+        Request request = optionalRequest.get();
+        model.addAttribute("request", request);
+        return "evaluate";
     }
 
     @PostMapping("/evaluate")
     public RedirectView makeResponse(Model model,
+
                                     @RequestParam("response_type") ResponseType responseType,
-                                    @RequestParam("response_comment") String comment
+                                    @RequestParam("response_comment") String comment,
+                                     @RequestParam("request_id") Request requestId
            ){
         Authentication authentication = authenticationFacade.getAuthentication();
-        Response response = new Response(UUID.randomUUID(),responseType,comment);
+        Response response = new Response(UUID.randomUUID(),responseType,comment, requestId);
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
       //need to be added th id request
 
