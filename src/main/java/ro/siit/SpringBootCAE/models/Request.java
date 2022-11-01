@@ -20,7 +20,7 @@ public class Request{
 
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="request_owner")
     private User owner;
 
 

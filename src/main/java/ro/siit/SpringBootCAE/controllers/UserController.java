@@ -7,18 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import ro.siit.SpringBootCAE.models.CustomUserDetails;
-import ro.siit.SpringBootCAE.models.Request;
-import ro.siit.SpringBootCAE.models.Response;
-import ro.siit.SpringBootCAE.models.ResponseType;
+import ro.siit.SpringBootCAE.models.*;
 import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/requests")
@@ -35,9 +30,21 @@ private IAuthenticationFacade authenticationFacade;
 
     @GetMapping("/")
     public String getRequests(Model model){
-        model.addAttribute("requests", requestsRepository.findAll()) ;
+        Authentication authentication = authenticationFacade.getAuthentication();
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        model.addAttribute("requests", requestsRepository.sortRequestsByUser(user));
      return "UI";
     }
+
+    @GetMapping("/myRequests")
+    public String getUserRequests(Model model){
+        Authentication authentication = authenticationFacade.getAuthentication();
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        model.addAttribute("requests", requestsRepository.findRequestsByUser(user));
+        return "UI";
+    }
+
+
 
     @GetMapping("/add")
     public String addRequestForm(Model model) {
@@ -58,10 +65,6 @@ private IAuthenticationFacade authenticationFacade;
     }
 
 
-//    @GetMapping("/evaluate")
-//    public String evaluateForm(Model model) {
-//        return "/evaluate";
-//    }
 
 
     @GetMapping("/evaluate/{id}")
