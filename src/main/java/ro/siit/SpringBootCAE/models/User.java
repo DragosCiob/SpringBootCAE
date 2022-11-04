@@ -3,6 +3,7 @@ package ro.siit.SpringBootCAE.models;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name="Users")
@@ -12,7 +13,7 @@ public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
-    private UUID id;
+    private UUID userId;
 
     @Column(name= "first_name", nullable = false,  length = 32)
     private String userFirstName;
@@ -29,7 +30,7 @@ public class User{
     @Column(name="password",nullable = false,  length = 64)
     private String password;
 
-
+    /** relation bidirectional one to many with Request  */
     @OneToMany //(fetch = FetchType.EAGER)??
      (
              mappedBy ="owner",
@@ -39,6 +40,8 @@ public class User{
 
     private List<Request> requestsList;
 
+
+    /** relation bidirectional one to many with Response  */
     @OneToMany //(fetch = FetchType.EAGER)??
             (
                     mappedBy ="user",
@@ -49,9 +52,14 @@ public class User{
     private List<Response> responsesList;
 
 
+    @ManyToMany(mappedBy = "projectMembers", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private Set<Project> projects;
+
+
+
 
     public User(UUID id, String userFirstName, String userSecondName, String username, Team team, String password) {
-        this.id = id;
+        this.userId = id;
         this.userFirstName = userFirstName;
         this.userSecondName = userSecondName;
         this.username =username;
@@ -59,12 +67,12 @@ public class User{
         this.password= password;
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getUserFirstName() {
@@ -121,6 +129,14 @@ public class User{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 
     public User(){};

@@ -18,11 +18,12 @@ public class Response {
     @Column(name ="response_comment", nullable = false)
     private String comment;
 
-
+    /** relation bidirectional many to one with Request */
     @ManyToOne
     @JoinColumn(name="request_id")
     private Request request;
 
+    /** relation bidirectional many to one with User  */
     @ManyToOne
     @JoinColumn(name="response_owner")
     private User user;
