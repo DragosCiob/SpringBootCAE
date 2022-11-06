@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml"  >
 <head>
-  <title>W3.CSS Template</title>
+  <title>User Interface</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -26,8 +26,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container w3-row">
 
-    <div class="w3-col s8 w3-bar">
-      <span>Welcome, <strong>USER</strong></span><br>
+    <div class="w3-col s8 w3-bar" >
+      <span>Welcome, <strong th:text="${user.userFirstName}">USER</strong></span><br>
       <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
     </div>
   </div>
@@ -42,6 +42,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Mechanical</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  CFD</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  NVH</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Logout</a>
   </div>
 </nav>
 
@@ -54,7 +55,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
-    <h5><b><i class="fa fa-dashboard"></i>User Dashboard</b></h5>
+    <h5 th:text="${user.team}+'  '+'Dashboard'"><b><i class="fa fa-dashboard"></i>User Dashboard</b></h5>
   </header>
 
   <div class="w3-bar">
@@ -107,7 +108,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <div class="w3-panel">
 
       <div class="w3-twothird">
-        <h5> </h5>
+        <h5 > </h5>
 
         <table class="w3-table w3-striped w3-white" >
           <thead>
@@ -125,7 +126,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
             <td>
 <!--              <form action="#" th:action="@{/requests/evaluate}">-->
 <!--              </form>-->
-              <a class="btn btn-outline-primary" th:href="@{/requests/evaluate/{id}(id=${request.id})}">evaluate</a>
+              <a class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
 
             </td>
           </tr>

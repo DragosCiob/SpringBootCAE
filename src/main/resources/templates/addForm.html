@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="UTF-8">
         <title>Add</title>
     </head>
     <body>
         <h1>Add request</h1>
-        <form method="post" action="/requests/add">
+        <form method="post" action="/user/add">
+
+            <select name="select project" class="form-control" id="dropDownList">
+                <option  th:each="project :${projects}" th:value="${project.projectId}" th:text="${project.projectName}"></option>
+            </select>
+
 <!--            <input type="text" name="id" placeholder="request Id">-->
             <input type="text" name="request_name" placeholder="request_name">
             <input type="text" name="request_description" placeholder="request_description">

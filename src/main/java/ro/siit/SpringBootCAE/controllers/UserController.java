@@ -8,24 +8,27 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ro.siit.SpringBootCAE.models.*;
+import ro.siit.SpringBootCAE.repositores.ProjectRepository;
 import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
-@RequestMapping("/requests")
+@RequestMapping("/user")
 public class UserController {
-@Autowired
-private RequestRepository requestsRepository;
 
-@Autowired
-private ResponseRepository responseRepository;
+    @Autowired
+    private ProjectRepository projectsRepository;
+    @Autowired
+    private RequestRepository requestsRepository;
 
-@Autowired
-private IAuthenticationFacade authenticationFacade;
+    @Autowired
+    private ResponseRepository responseRepository;
+
+    @Autowired
+    private IAuthenticationFacade authenticationFacade;
 
 
     @GetMapping("/")
@@ -51,17 +54,18 @@ private IAuthenticationFacade authenticationFacade;
         return "/addForm";
     }
 
+
+// needs to be implemented project as a param
     @PostMapping("/add")
     public RedirectView makeRequest(Model model,
                                     @RequestParam("request_name") String name,
                                     @RequestParam("request_description") String description
-                                  /* @RequestParam("user_id") User owner */ ){
-
+                                    ){
         Authentication authentication = authenticationFacade.getAuthentication();
         Request addedRequest = new Request(UUID.randomUUID(),name,description);
         addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
         requestsRepository.saveAndFlush(addedRequest);
-        return new RedirectView("/requests/");
+        return new RedirectView("/user/");
     }
 
 
@@ -88,7 +92,22 @@ private IAuthenticationFacade authenticationFacade;
       //need to be added th id request
 
         responseRepository.saveAndFlush(response);
-        return new RedirectView("/requests/");
+        return new RedirectView("/user/");
+    }
+
+
+
+    @ModelAttribute("projects")
+    public List<Project> displayProjectsList(){
+
+        return projectsRepository.findAll();
+    }
+
+    @ModelAttribute("user")
+    public User  displayUser(){
+        Authentication authentication = authenticationFacade.getAuthentication();
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        return user;
     }
 
 

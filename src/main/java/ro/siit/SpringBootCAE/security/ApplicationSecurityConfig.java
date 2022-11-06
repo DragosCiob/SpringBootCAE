@@ -40,7 +40,7 @@ public class ApplicationSecurityConfig {
                 .authorizeHttpRequests((authz) -> {
                     try {
                         authz
-                                .antMatchers("/requests/*").authenticated()
+                                .antMatchers("/user/*").authenticated()
                                 .anyRequest().permitAll()
                                 .and()
                                 .formLogin()
@@ -48,7 +48,7 @@ public class ApplicationSecurityConfig {
                                 .loginProcessingUrl("/login")
                                 .failureUrl("/login-error")
                                 .usernameParameter("username")
-                                .defaultSuccessUrl("/requests/")
+                                .defaultSuccessUrl("/user/")
                                 .permitAll()
                                 .and()
                                 .logout().logoutSuccessUrl("/login").permitAll();

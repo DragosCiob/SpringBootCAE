@@ -8,11 +8,11 @@
 
 <body>
 <h1> Evaluate </h1>
-<form method="post" th:action="@{/requests/evaluate}">
+<form method="post" th:action="@{/user/evaluate}">
 
   <input type="text" name="response_type" placeholder="response_type">
   <input type="text" name="response_comment" placeholder="response_comment">
-    <input type="hidden" th:value="${request.id}" name="request_id">
+    <input type="hidden" th:value="${request.requestId}" name="request_id">
 
   <input type="submit" value="Add response">
 </form>
