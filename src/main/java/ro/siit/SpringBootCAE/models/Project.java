@@ -37,9 +37,10 @@ public class Project{
     private Set<User> projectMembers;
 
 
-    public Project(UUID projectId, String projectName) {
+    public Project(UUID projectId, String projectName /*Set<User> projectMembers*/) {
         this.projectId = projectId;
         this.projectName = projectName;
+        /*this.projectMembers = projectMembers;*/
     }
 
     public UUID getProjectId() {

@@ -33,18 +33,37 @@ public class UserController {
 
     @GetMapping("/")
     public String getRequests(Model model){
-        Authentication authentication = authenticationFacade.getAuthentication();
-        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
-        model.addAttribute("requests", requestsRepository.sortRequestsByUser(user));
+
+        User user = getLoggedUser();
+        List<Request> requestList =requestsRepository.sortRequestsByUser(user);
+        List<Response> responseList =responseRepository.findAll();
+
+        List<Request> requestsToDisplay =requestsRepository.sortRequestsByUser(user);
+// might be not effective method
+        for (Request request: requestList) {
+           UUID requestID = request.getRequestId();
+            for (Response response:responseList) {
+                if(requestID.equals(response.getRequest().getRequestId()) && user.getUserId().equals(response.getUser().getUserId()) ){
+                    requestsToDisplay.remove(request);
+
+                }
+            }
+        }
+        model.addAttribute("requests", requestsToDisplay);
+
      return "UI";
     }
 
     @GetMapping("/myRequests")
     public String getUserRequests(Model model){
-        Authentication authentication = authenticationFacade.getAuthentication();
-        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        User user = getLoggedUser();
         model.addAttribute("requests", requestsRepository.findRequestsByUser(user));
         return "UI";
+    }
+
+    public User getLoggedUser() {
+        Authentication authentication = authenticationFacade.getAuthentication();
+        return ((CustomUserDetails) authentication.getPrincipal()).getUser();
     }
 
 
@@ -55,14 +74,15 @@ public class UserController {
     }
 
 
-// needs to be implemented project as a param
+
     @PostMapping("/add")
     public RedirectView makeRequest(Model model,
                                     @RequestParam("request_name") String name,
-                                    @RequestParam("request_description") String description
+                                    @RequestParam("request_description") String description,
+                                    @RequestParam("project_id") Project project
                                     ){
         Authentication authentication = authenticationFacade.getAuthentication();
-        Request addedRequest = new Request(UUID.randomUUID(),name,description);
+        Request addedRequest = new Request(UUID.randomUUID(),name,description,project);
         addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
         requestsRepository.saveAndFlush(addedRequest);
         return new RedirectView("/user/");
@@ -105,8 +125,7 @@ public class UserController {
 
     @ModelAttribute("user")
     public User  displayUser(){
-        Authentication authentication = authenticationFacade.getAuthentication();
-        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        User user = getLoggedUser();
         return user;
     }
 

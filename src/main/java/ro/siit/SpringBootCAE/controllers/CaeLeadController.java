@@ -6,16 +6,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import ro.siit.SpringBootCAE.models.CustomUserDetails;
-import ro.siit.SpringBootCAE.models.Project;
-import ro.siit.SpringBootCAE.models.Request;
-import ro.siit.SpringBootCAE.models.User;
+import ro.siit.SpringBootCAE.models.*;
 import ro.siit.SpringBootCAE.repositores.ProjectRepository;
 import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
+import ro.siit.SpringBootCAE.repositores.UserRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,14 +32,22 @@ public class CaeLeadController {
     private ResponseRepository responseRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+
+    @Autowired
     private IAuthenticationFacade authenticationFacade;
 
     @GetMapping("/")
     public String getRequests(Model model){
-        Authentication authentication = authenticationFacade.getAuthentication();
-        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        User user = getLoggedUser();
         model.addAttribute("requests", requestsRepository.sortRequestsByUser(user));
         return "caeUI";
+    }
+
+    private User getLoggedUser() {
+        Authentication authentication = authenticationFacade.getAuthentication();
+        return ((CustomUserDetails) authentication.getPrincipal()).getUser();
     }
 
 
@@ -56,8 +63,9 @@ public class CaeLeadController {
                                     ){
 
         Authentication authentication = authenticationFacade.getAuthentication();
-        Project project = new Project(UUID.randomUUID(),projectName);
         User caeLead = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        Project project = new Project(UUID.randomUUID(),projectName);
+
         Set<User>projectsMembers= new HashSet<>();
         projectsMembers.add(caeLead);
         project.setProjectMembers(projectsMembers);
@@ -66,12 +74,37 @@ public class CaeLeadController {
         return new RedirectView("/caeLead/");
     }
 
+    /** method to send User info to frontend */
     @ModelAttribute("user")
     public User  displayUser(){
-        Authentication authentication = authenticationFacade.getAuthentication();
-        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        User user = getLoggedUser();
         return user;
     }
 
-    //method to create project team
+
+    /** method to send User info with cfd role to frontend */
+    @ModelAttribute("cfdUsers")
+    public List<User>   displayPossibleCfdMembers(){
+        return userRepository.findByRole(Team.CFD);
+    }
+
+    /** method to send User info with validation role to frontend */
+    @ModelAttribute("validationUsers")
+    public List<User>   displayPossibleValidationMembers(){
+        return userRepository.findByRole(Team.VALIDATION);
+    }
+
+    /** method to send User info with mechanical role to frontend */
+    @ModelAttribute("mechanicalUsers")
+    public List<User>   displayPossibleMechanicalMembers(){
+        return userRepository.findByRole(Team.MECHANICAL);
+    }
+
+    /** method to send User info with nvh role to frontend */
+    @ModelAttribute("mechanicalUsers")
+    public List<User>   displayPossibleNvhMembers(){
+        return userRepository.findByRole(Team.NVH);
+    }
+
+
 }

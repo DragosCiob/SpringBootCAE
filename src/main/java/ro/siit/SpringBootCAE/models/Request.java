@@ -43,11 +43,11 @@ public class Request{
 
 
 
-    public Request(UUID id, String requestName, String text/*User owner*/ ) {
+    public Request(UUID id, String requestName, String text,Project project ) {
         this.requestId = id;
         this.requestName = requestName;
         this.text = text;
-        /*this.owner = owner*/;
+        this.project=project;
     }
 
     public UUID getRequestId() {
