@@ -1,9 +1,8 @@
 package ro.siit.SpringBootCAE.models;
-
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
+import java.util.*;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -16,7 +15,17 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+       Team role = user.getTeam();
+        List<SimpleGrantedAuthority> authorities=new ArrayList<>();
+
+        if ( role.toString().equals("CAELEAD")) {
+            authorities.add(new SimpleGrantedAuthority(role.toString()));
+        } else{
+            authorities.add(new SimpleGrantedAuthority("USER"));
+        }
+        return authorities;
+
     }
 
     @Override
@@ -27,6 +36,11 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+
+    public Team getUseRole(){
+        return user.getTeam();
     }
 
     @Override

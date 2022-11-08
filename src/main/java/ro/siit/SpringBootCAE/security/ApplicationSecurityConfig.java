@@ -1,5 +1,6 @@
 package ro.siit.SpringBootCAE.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,6 +25,9 @@ public class ApplicationSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired private LoginSuccessHandler loginSuccessHandler;
+
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -40,7 +44,9 @@ public class ApplicationSecurityConfig {
                 .authorizeHttpRequests((authz) -> {
                     try {
                         authz
-                                .antMatchers("/user/*").authenticated()
+                                .antMatchers("/caeLead/*").hasAuthority("CAELEAD")
+                                .antMatchers("/user/*").hasAuthority("USER")
+//                                .authenticated()
                                 .anyRequest().permitAll()
                                 .and()
                                 .formLogin()
@@ -48,7 +54,8 @@ public class ApplicationSecurityConfig {
                                 .loginProcessingUrl("/login")
                                 .failureUrl("/login-error")
                                 .usernameParameter("username")
-                                .defaultSuccessUrl("/user/")
+                                .successHandler(loginSuccessHandler)
+//                                .defaultSuccessUrl("/user/")
                                 .permitAll()
                                 .and()
                                 .logout().logoutSuccessUrl("/login").permitAll();
