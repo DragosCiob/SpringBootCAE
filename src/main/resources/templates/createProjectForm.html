@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>Add</title>
@@ -9,9 +9,21 @@
 <form method="post" action="/caeLead/createProject">
 
   <input type="text" name="project_name" placeholder="project_name">
-
-
   <input type="submit" value="Create project">
+
+  <select  name="projectMembers" class="form-control" id="dropDownList1">
+    <option th:each="user :${cfdUsers}" th:value="${user.userId}" th:text="${user.team}+ ' ' + 'role' +'| '+${user.userFirstName}+' '+${user.userSecondName}" ></option>
+  </select>
+  <select  name="projectMembers" class="form-control" id="dropDownList2">
+    <option th:each="user :${validationUsers}" th:value="${user.userId}" th:text="${user.team}+ ' ' + 'role' +'| '+${user.userFirstName}+' '+${user.userSecondName}" ></option>
+  </select>
+  <select  name="projectMembers" class="form-control" id="dropDownList3">
+    <option th:each="user :${mechanicalUsers}" th:value="${user.userId}" th:text="${user.team}+ ' ' + 'role' +'| '+${user.userFirstName}+' '+${user.userSecondName}" ></option>
+  </select>
+  <select  name="projectMembers" class="form-control" id="dropDownList4">
+    <option th:each="user :${nvhUsers}" th:value="${user.userId}" th:text="${user.team}+ ' ' + 'role' +'| '+${user.userFirstName}+' '+${user.userSecondName}" ></option>
+  </select>
+
 </form>
 </body>
 </html>

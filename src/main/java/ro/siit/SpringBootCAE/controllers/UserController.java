@@ -91,6 +91,8 @@ public class UserController {
 
 
 
+
+
     @GetMapping("/evaluate/{id}")
     public String evaluateRequest(Model model, @PathVariable("id") UUID requestId) {
         Optional<Request> optionalRequest = requestsRepository.findById(requestId);
@@ -115,13 +117,27 @@ public class UserController {
         return new RedirectView("/user/");
     }
 
-
+    /** send to frontend only the projects where the User is member*/
 
     @ModelAttribute("projects")
     public List<Project> displayProjectsList(){
 
-        return projectsRepository.findAll();
+        List<Project> projectListToDisplay = new ArrayList<>();
+        List<Project> projectList = projectsRepository.findAll();
+        User user = getLoggedUser();
+
+        for (Project project:projectList) {
+            Set<User> users = project.getProjectMembers();
+            for (User userToCheck: users) {
+               if( userToCheck.getUserId().toString().equals(user.getUserId().toString())){
+                   projectListToDisplay.add(project);
+               }
+            }
+        }
+
+        return projectListToDisplay;
     }
+
 
     @ModelAttribute("user")
     public User  displayUser(){

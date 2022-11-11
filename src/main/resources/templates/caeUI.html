@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml"  >
 <head>
-  <title>User Interface</title>
+  <title>W3.CSS Template</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -26,7 +26,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container w3-row">
 
-    <div class="w3-col s8 w3-bar" >
+    <div class="w3-col s8 w3-bar">
       <span>Welcome, <strong th:text="${user.userFirstName}">USER</strong></span><br>
       <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
     </div>
@@ -42,7 +42,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Mechanical</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  CFD</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  NVH</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Logout</a>
   </div>
 </nav>
 
@@ -60,45 +59,45 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <div class="w3-bar">
 
-    <form action="#" th:action="@{add}">
+    <form action="#" th:action="@{createProject}">
       <button class="w3-bar-item w3-button w3-amber w3-padding-16" style="width:25%">
         <div class="w3-left"><i class="fa fa-exclamation-circle w3-xxxlarge"></i></div>
 
-  <!--      <div class="w3-right">-->
-  <!--        <h3>CFD</h3>-->
-  <!--      </div>-->
+        <!--      <div class="w3-right">-->
+        <!--        <h3>CFD</h3>-->
+        <!--      </div>-->
 
         <div class="w3-clear"></div>
-        <h4>New Requests</h4>
+        <h4>Create Project</h4>
       </button>
     </form>
 
     <form action="#" th:action="@{myRequests}">
-    <button class="w3-bar-item w3-button w3-blue w3-padding-16" style="width:25%" >
-      <div class="w3-left"><i class="fa fa-database w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>Total number of my requests</h3>-->
-<!--      </div>-->
-      <div class="w3-clear"></div>
-      <h4>My Requests</h4>
-    </button>
+      <button class="w3-bar-item w3-button w3-blue w3-padding-16" style="width:25%" >
+        <div class="w3-left"><i class="fa fa-database w3-xxxlarge"></i></div>
+        <!--      <div class="w3-right">-->
+        <!--        <h3>Total number of my requests</h3>-->
+        <!--      </div>-->
+        <div class="w3-clear"></div>
+        <h4>My Requests</h4>
+      </button>
     </form>
 
 
     <button class="w3-bar-item w3-button w3-teal w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-bar-chart-o w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>Statistics</h3>-->
-<!--      </div>-->
+      <!--      <div class="w3-right">-->
+      <!--        <h3>Statistics</h3>-->
+      <!--      </div>-->
       <div class="w3-clear"></div>
       <h4>Projects Overview</h4>
     </button>
 
     <button class="w3-bar-item w3-button w3-orange w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>number of simulation that need to be deployed</h3>-->
-<!--      </div>-->
+      <!--      <div class="w3-right">-->
+      <!--        <h3>number of simulation that need to be deployed</h3>-->
+      <!--      </div>-->
       <div class="w3-clear"></div>
       <h4>Simulations Deployed</h4>
     </button>
@@ -107,32 +106,33 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <div class="w3-panel">
 
-      <div class="w3-twothird">
-        <h5 > </h5>
+    <div class="w3-twothird">
+      <h5 > </h5>
 
-        <table class="w3-table w3-striped w3-white" >
-          <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Request Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Project</th>
-            <th scope="col">Owner</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="request, iter:${requests}"  >
-            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large"></i> >1 </th>
-            <td  th:text="${request.requestName}" th:action="@{/user/evaluate/{id}(id=${request.requestId})}"></td>
-            <td th:text="${request.text}" ></td>
-            <td th:text="${request.project}" ></td>
-            <td th:text="${request.owner}" ></td>
-            <td>
-              <a class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+      <table class="w3-table w3-striped w3-white" >
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Request Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Project</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="request, iter:${requests}"  >
+          <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large"></i> >1 </th>
+          <td th:text="${request.requestName}"></td>
+          <td th:text="${request.text}" ></td>
+          <td th:text="${request.project}" ></td>
+          <td>
+            <!--              <form action="#" th:action="@{/requests/evaluate}">-->
+            <!--              </form>-->
+            <a class="btn btn-outline-primary" th:href="@{/requests/evaluate/{id}(id=${request.requestId})}">evaluate</a>
+
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
     </div>
 

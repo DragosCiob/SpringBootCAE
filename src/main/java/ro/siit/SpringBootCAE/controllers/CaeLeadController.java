@@ -59,14 +59,14 @@ public class CaeLeadController {
     /** only USER with CAELEAD role can create a project*/
     @PostMapping("/createProject")
     public RedirectView makeRequest(Model model,
-                                    @RequestParam("project_name") String projectName
-                                    ){
+                                    @RequestParam("project_name") String projectName,
+                                    @RequestParam("projectMembers")  Set<User> projectMembers){
 
         Authentication authentication = authenticationFacade.getAuthentication();
         User caeLead = ((CustomUserDetails) authentication.getPrincipal()).getUser();
-        Project project = new Project(UUID.randomUUID(),projectName);
+        Project project = new Project(UUID.randomUUID(),projectName,projectMembers);
 
-        Set<User>projectsMembers= new HashSet<>();
+        Set<User>projectsMembers=project.getProjectMembers();
         projectsMembers.add(caeLead);
         project.setProjectMembers(projectsMembers);
 
@@ -101,7 +101,7 @@ public class CaeLeadController {
     }
 
     /** method to send User info with nvh role to frontend */
-    @ModelAttribute("mechanicalUsers")
+    @ModelAttribute("nvhUsers")
     public List<User>   displayPossibleNvhMembers(){
         return userRepository.findByRole(Team.NVH);
     }
