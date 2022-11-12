@@ -22,14 +22,16 @@
         );
 
 
-        create table requests (
-           request_id uuid not null,
-            request_name varchar(32) not null,
-            request_description varchar(255) not null,
-            request_owner uuid,
-            project_id uuid,
-            primary key (request_id)
-        );
+          create table requests (
+             request_id uuid not null,
+              request_index float8 not null,
+              request_name varchar(32) not null,
+              request_description varchar(255) not null,
+              request_owner uuid,
+              project_id uuid,
+              primary key (request_id)
+          );
+
         create table responses (
            response_id uuid not null,
             response_comment varchar(255) not null,

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Update</title>
+</head>
+
+
+<body>
+<h1> Update </h1>
+<form method="post" th:action="@{/user/update}">
+
+  <label th:text="${request.requestName}+' '+ 'to update'" > to edit</label>
+  <input type="hidden" name="request_name" th:value="${request.requestName}">
+  <input type="text" name="request_description" placeholder="request_description">
+  <input type="hidden" name="project_id" th:value="${project.projectId}">
+
+  <input type="submit" value="update">
+</form>
+</body>
+
+
+</html>

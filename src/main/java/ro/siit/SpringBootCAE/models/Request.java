@@ -18,6 +18,9 @@ public class Request{
     @Column(name ="request_description",nullable = false)
     private String text;
 
+    @Column(name ="request_index",nullable = false)
+    private Double index;
+
     /** relation bidirectional many to one with User  */
     @ManyToOne
     @JoinColumn(name="request_owner")
@@ -41,13 +44,12 @@ public class Request{
     private Project project;
 
 
-
-
-    public Request(UUID id, String requestName, String text,Project project ) {
+    public Request(UUID id, String requestName, String text,Project project /*Integer index*/ ) {
         this.requestId = id;
         this.requestName = requestName;
         this.text = text;
         this.project=project;
+        /*this.index=index;*/
     }
 
     public UUID getRequestId() {
@@ -99,7 +101,13 @@ public class Request{
         this.project = project;
     }
 
+    public Double getIndex() {
+        return index;
+    }
 
+    public void setIndex(Double index) {
+        this.index = index;
+    }
 
     public Request(){};
 

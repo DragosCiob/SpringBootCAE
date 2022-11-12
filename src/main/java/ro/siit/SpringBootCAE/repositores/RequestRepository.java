@@ -3,6 +3,7 @@ package ro.siit.SpringBootCAE.repositores;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ro.siit.SpringBootCAE.models.Project;
 import ro.siit.SpringBootCAE.models.Request;
 import ro.siit.SpringBootCAE.models.User;
 
@@ -18,4 +19,13 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
 
     @Query(value="SELECT r FROM Requests r WHERE r.owner=?1" ,nativeQuery = false)
     List<Request> findRequestsByUser(User user);
+
+    @Query(value="SELECT r FROM Requests r WHERE r.project=?1" ,nativeQuery = false)
+    List<Request> findRequestsByProject(Project project);
+
+    @Query(value="SELECT r FROM Requests r WHERE r.requestName=?1" ,nativeQuery = false)
+    Request findRequestsByName(String requestName);
+
+
+
 }

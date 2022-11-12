@@ -84,11 +84,20 @@ public class UserController {
         Authentication authentication = authenticationFacade.getAuthentication();
         Request addedRequest = new Request(UUID.randomUUID(),name,description,project);
         addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
+        addedRequest.setIndex(generateIndex(project));
         requestsRepository.saveAndFlush(addedRequest);
         return new RedirectView("/user/");
     }
 
-
+//set index method
+    private Double generateIndex(Project project){
+        List<Request>requestListOfProject = requestsRepository.findRequestsByProject(project);
+         if(requestListOfProject.size()==0){
+             return 1.0;
+         }else {
+             return requestListOfProject.size()+1.0;
+         }
+    };
 
 
 
@@ -111,11 +120,46 @@ public class UserController {
         Authentication authentication = authenticationFacade.getAuthentication();
         Response response = new Response(UUID.randomUUID(),responseType,comment, requestId);
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
-      //need to be added th id request
-
         responseRepository.saveAndFlush(response);
         return new RedirectView("/user/");
     }
+
+
+
+    @GetMapping("/update/{name}")
+    public String updateRequest(Model model, @PathVariable("name") String requestName) {
+       Request requestToEdit = requestsRepository.findRequestsByName(requestName);
+       Project project= requestToEdit.getProject();
+       model.addAttribute("request", requestToEdit);
+       model.addAttribute("project", project);
+        return "updateForm";
+    }
+
+
+    @PostMapping("/update")
+    public RedirectView makeUpdate(Model model,
+                                   @RequestParam("request_name") String name,
+                                   @RequestParam("request_description") String description,
+                                   @RequestParam("project_id") Project project
+    ){
+        Authentication authentication = authenticationFacade.getAuthentication();
+
+        Request updatedRequest = new Request(UUID.randomUUID(),name,description,project);
+        updatedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
+        updatedRequest.setIndex(generateUpdateIndex(name));
+        requestsRepository.saveAndFlush(updatedRequest);
+        return new RedirectView("/user/");
+    }
+
+
+    ////set index method
+    private double generateUpdateIndex(String requestName){
+        Request request = requestsRepository.findRequestsByName(requestName);
+        return request.getIndex()+0.1;
+
+    };
+
+
 
     /** send to frontend only the projects where the User is member*/
 

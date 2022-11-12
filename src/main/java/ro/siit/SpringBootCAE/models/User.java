@@ -140,4 +140,11 @@ public class User{
     }
 
     public User(){};
+
+    @Override
+    public String toString() {
+        return   userFirstName + " "+
+                "member of" + " "+ team ;
+
+    }
 }
