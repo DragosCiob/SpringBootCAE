@@ -41,3 +41,10 @@
             primary key (response_id)
         );
 
+            create table project_task (
+               deadline date not null,
+                start_date date not null,
+                request_id uuid not null,
+                primary key (request_id)
+            );
+
