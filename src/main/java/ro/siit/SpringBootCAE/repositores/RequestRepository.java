@@ -26,6 +26,9 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
     @Query(value="SELECT r FROM Requests r WHERE r.requestName=?1" ,nativeQuery = false)
     Request findRequestsByName(String requestName);
 
+    @Query(value="SELECT r FROM Requests r WHERE r.requestId=?1" ,nativeQuery = false)
+    Request findRequestsById(UUID requestId);
+
 
 
 }

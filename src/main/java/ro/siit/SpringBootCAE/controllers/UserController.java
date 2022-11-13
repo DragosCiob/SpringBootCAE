@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ro.siit.SpringBootCAE.models.*;
 import ro.siit.SpringBootCAE.repositores.ProjectRepository;
+import ro.siit.SpringBootCAE.repositores.ProjectTaskRepository;
 import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Controller
@@ -29,6 +31,10 @@ public class UserController {
 
     @Autowired
     private IAuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private ProjectTaskRepository projectTaskRepository;
+
 
 
     @GetMapping("/")
@@ -81,6 +87,8 @@ public class UserController {
                                     @RequestParam("request_description") String description,
                                     @RequestParam("project_id") Project project
                                     ){
+
+
         Authentication authentication = authenticationFacade.getAuthentication();
         Request addedRequest = new Request(UUID.randomUUID(),name,description,project);
         addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
@@ -121,7 +129,24 @@ public class UserController {
         Response response = new Response(UUID.randomUUID(),responseType,comment, requestId);
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
         responseRepository.saveAndFlush(response);
+
+        generateProjectTask(requestId);
+
         return new RedirectView("/user/");
+    }
+
+    /** generates a duplicate entry in requests table*/
+    private void generateProjectTask(Request request){
+        List<Response> responsesList = request.getResponseListList();
+        if(responsesList.size()==1){
+            LocalDate start =(LocalDate.now());
+            LocalDate end =(LocalDate.now().plusWeeks(2));
+            ProjectTask projectTask = new ProjectTask(request.getRequestId(),request.getRequestName(),request.getText(),request.getProject(),start,end);
+            projectTask.setIndex(request.getIndex());
+            projectTask.setOwner(request.getOwner());
+            projectTaskRepository.saveAndFlush(projectTask);
+
+        }
     }
 
 

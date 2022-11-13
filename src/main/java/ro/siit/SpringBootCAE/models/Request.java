@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity(name="Requests")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Request{
 
     @Id
