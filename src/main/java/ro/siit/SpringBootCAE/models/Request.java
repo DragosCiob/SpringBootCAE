@@ -35,7 +35,7 @@ public class Request{
                     orphanRemoval = true
             )
 
-    private List<Response> responseListList;
+    private List<Response> responseList;
 
 
 
@@ -86,12 +86,12 @@ public class Request{
     }
 
 
-    public List<Response> getResponseListList() {
-        return responseListList;
+    public List<Response> getResponseList() {
+        return responseList;
     }
 
-    public void setResponseListList(List<Response> responseListList) {
-        this.responseListList = responseListList;
+    public void setResponseList(List<Response> responseList) {
+        this.responseList = responseList;
     }
 
     public Project getProject() {

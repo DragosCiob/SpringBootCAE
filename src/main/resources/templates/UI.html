@@ -123,12 +123,13 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
           <tbody>
           <tr th:each="request, iter:${requests}"  >
             <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large"></i> >1 </th>
-            <td  th:text="${request.requestName}" th:action="@{/user/evaluate/{id}(id=${request.requestId})}"></td>
+            <td  th:text="${request.requestName}" ></td>
             <td th:text="${request.text}" ></td>
             <td th:text="${request.project}" ></td>
             <td th:text="${request.owner}" ></td>
             <td>
               <a class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
+              <a class="btn btn-outline-primary" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>
             </td>
           </tr>
           </tbody>

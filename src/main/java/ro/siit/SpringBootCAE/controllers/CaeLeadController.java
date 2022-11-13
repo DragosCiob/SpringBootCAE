@@ -13,10 +13,7 @@ import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.repositores.UserRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/caeLead")
@@ -71,7 +68,53 @@ public class CaeLeadController {
         project.setProjectMembers(projectsMembers);
 
         projectsRepository.saveAndFlush(project);
+        return new RedirectView("/caeLead/add");
+    }
+
+
+    @GetMapping("/add")
+    public String addRequestForm(Model model) {
+        return "/addFormCae";
+    }
+
+
+
+    @PostMapping("/add")
+    public RedirectView makeRequest(Model model,
+                                    @RequestParam("request_name") String name,
+                                    @RequestParam("request_description") String description,
+                                    @RequestParam("project_id") Project project
+    ){
+
+
+            Authentication authentication = authenticationFacade.getAuthentication();
+            Request addedRequest = new Request(UUID.randomUUID(), name, description, project);
+            addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
+            addedRequest.setIndex(generateIndex(project));
+            //set the response of the owner
+            List<Response>responseList = new ArrayList<>();
+            addedRequest.setResponseList(responseList);
+            responseList.add(setOwnerResponse(addedRequest));
+            requestsRepository.saveAndFlush(addedRequest);
+
         return new RedirectView("/caeLead/");
+    }
+
+    //ser user that own request the response
+    private Response setOwnerResponse(Request request){
+        Response ownerResponse =new Response(UUID.randomUUID(), ResponseType.APPROVED, "APPROVED",request);
+        ownerResponse.setUser(getLoggedUser());
+        return ownerResponse;
+    }
+
+    //set index method
+    private  Double generateIndex(Project project){
+        List<Request>requestListOfProject = requestsRepository.findRequestsByProject(project);
+        if(requestListOfProject.size()==0){
+            return 1.0;
+        }else {
+            return requestListOfProject.size()+1.0;
+        }
     }
 
     /** method to send User info to frontend */
@@ -104,6 +147,25 @@ public class CaeLeadController {
     @ModelAttribute("nvhUsers")
     public List<User>   displayPossibleNvhMembers(){
         return userRepository.findByRole(Team.NVH);
+    }
+
+    @ModelAttribute("projects")
+    public List<Project> displayProjectsList(){
+
+        List<Project> projectListToDisplay = new ArrayList<>();
+        List<Project> projectList = projectsRepository.findAll();
+        User user = getLoggedUser();
+
+        for (Project project:projectList) {
+            Set<User> users = project.getProjectMembers();
+            for (User userToCheck: users) {
+                if( userToCheck.getUserId().toString().equals(user.getUserId().toString())){
+                    projectListToDisplay.add(project);
+                }
+            }
+        }
+
+        return projectListToDisplay;
     }
 
 

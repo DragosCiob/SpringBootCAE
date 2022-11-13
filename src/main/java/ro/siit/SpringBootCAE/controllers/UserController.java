@@ -16,6 +16,7 @@ import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/user")
@@ -88,24 +89,50 @@ public class UserController {
                                     @RequestParam("project_id") Project project
                                     ){
 
+        //check if there is any active request
+        if(!checkActiveRequest(project)) {
+            Authentication authentication = authenticationFacade.getAuthentication();
+            Request addedRequest = new Request(UUID.randomUUID(), name, description, project);
+            addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
+            addedRequest.setIndex(generateIndex(project));
+            //set the response of the owner
+            List<Response>responseList = new ArrayList<>();
+            addedRequest.setResponseList(responseList);
+            responseList.add(setOwnerResponse(addedRequest));
+            requestsRepository.saveAndFlush(addedRequest);
+        }else{
+            throw new RuntimeException();
+        }
 
-        Authentication authentication = authenticationFacade.getAuthentication();
-        Request addedRequest = new Request(UUID.randomUUID(),name,description,project);
-        addedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
-        addedRequest.setIndex(generateIndex(project));
-        requestsRepository.saveAndFlush(addedRequest);
         return new RedirectView("/user/");
     }
 
+//check if there is any active request
+    private boolean checkActiveRequest(Project project) {
+        boolean  response =false;
+       List<Request> listToCheck= project.getProjectRequestsList();
+       if(listToCheck.size()<5){
+           response=true;
+       }
+       return response;
+    }
+
+    //ser user that own request the response
+    private Response setOwnerResponse(Request request){
+        Response ownerResponse =new Response(UUID.randomUUID(), ResponseType.APPROVED, "APPROVED",request);
+        ownerResponse.setUser(getLoggedUser());
+        return ownerResponse;
+    }
+
 //set index method
-    private Double generateIndex(Project project){
+    private  Double generateIndex(Project project){
         List<Request>requestListOfProject = requestsRepository.findRequestsByProject(project);
          if(requestListOfProject.size()==0){
              return 1.0;
          }else {
              return requestListOfProject.size()+1.0;
          }
-    };
+    }
 
 
 
@@ -137,15 +164,20 @@ public class UserController {
 
     /** generates a duplicate entry in requests table*/
     private void generateProjectTask(Request request){
-        List<Response> responsesList = request.getResponseListList();
-        if(responsesList.size()==1){
-            LocalDate start =(LocalDate.now());
-            LocalDate end =(LocalDate.now().plusWeeks(2));
-            ProjectTask projectTask = new ProjectTask(request.getRequestId(),request.getRequestName(),request.getText(),request.getProject(),start,end);
-            projectTask.setIndex(request.getIndex());
-            projectTask.setOwner(request.getOwner());
-            projectTaskRepository.saveAndFlush(projectTask);
+        List<Response> responsesList = request.getResponseList();
+        if(responsesList.size()==5){
 
+            List<Response> responseList=responsesList.stream()
+                    .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
+
+            if(responsesList.size()<3) {
+                LocalDate start = (LocalDate.now());
+                LocalDate end = (LocalDate.now().plusWeeks(2));
+                ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
+                projectTask.setIndex(request.getIndex());
+                projectTask.setOwner(request.getOwner());
+                projectTaskRepository.saveAndFlush(projectTask);
+            }
         }
     }
 
@@ -212,6 +244,19 @@ public class UserController {
     public User  displayUser(){
         User user = getLoggedUser();
         return user;
+    }
+
+
+    /** send to frontend only the projects where the User is member*/
+
+    @ModelAttribute("responseType")
+    public Set<ResponseType> displayResponseType(){
+
+        Set<ResponseType> listResponseType = new HashSet<>();
+        listResponseType.add(ResponseType.APPROVED);
+        listResponseType.add(ResponseType.REJECTED);
+
+        return listResponseType;
     }
 
 
