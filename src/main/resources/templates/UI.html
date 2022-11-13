@@ -28,7 +28,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
     <div class="w3-col s8 w3-bar" >
       <span>Welcome, <strong th:text="${user.userFirstName}">USER</strong></span><br>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
     </div>
   </div>
   <hr>
@@ -87,20 +86,20 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
     <button class="w3-bar-item w3-button w3-teal w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-bar-chart-o w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>Statistics</h3>-->
-<!--      </div>-->
+      <div class="w3-right">
+        <h3 th:text="${projects.size}">Statistics</h3>
+      </div>
       <div class="w3-clear"></div>
       <h4>Projects Overview</h4>
     </button>
 
     <button class="w3-bar-item w3-button w3-orange w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>number of simulation that need to be deployed</h3>-->
-<!--      </div>-->
+      <div class="w3-right">
+        <h3 th:text="${noOfProjectsTasks}">number of tasks</h3>
+      </div>
       <div class="w3-clear"></div>
-      <h4>Simulations Deployed</h4>
+      <h4>Projects Tasks</h4>
     </button>
 
   </div>
@@ -128,8 +127,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
             <td th:text="${request.project}" ></td>
             <td th:text="${request.owner}" ></td>
             <td>
-              <a class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
-              <a class="btn btn-outline-primary" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>
+
+              <a th:unless="${request.owner == 'user'}"  id="evaluate"  class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
+              <a th:if="${request.owner == 'user'}" id="update" class="btn btn-outline-primary" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>
+
             </td>
           </tr>
           </tbody>
@@ -146,6 +147,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <!-- End page content -->
 </div>
+
+
+
+<script>
+<<script !src="">
+</script>>
 
 <script>
 // Get the Sidebar

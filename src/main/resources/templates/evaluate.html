@@ -10,7 +10,7 @@
 <h1> Evaluate </h1>
 <form method="post" th:action="@{/user/evaluate}">
 
-    <select  name="responseType" class="form-control" id="dropDownList">
+    <select  name="response_type" class="form-control" id="dropDownList">
         <option th:each="responseType :${responseType}" th:value="${responseType}" th:text="${responseType}" ></option>
     </select>
 

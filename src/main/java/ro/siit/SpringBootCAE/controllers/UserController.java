@@ -46,6 +46,20 @@ public class UserController {
         List<Response> responseList =responseRepository.findAll();
 
         List<Request> requestsToDisplay =requestsRepository.sortRequestsByUser(user);
+      //check for project list
+        List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
+        for (Request request: requestList) {
+            String requestName =request.getRequestName();
+            for (ProjectTask projectTask:ProjectTask) {
+                if(requestName.equals(projectTask.getRequestName())){
+                    requestsToDisplay.remove(request);
+                }
+
+            }
+        }
+
+
+
 // might be not effective method
         for (Request request: requestList) {
            UUID requestID = request.getRequestId();
@@ -54,6 +68,7 @@ public class UserController {
                     requestsToDisplay.remove(request);
 
                 }
+
             }
         }
         model.addAttribute("requests", requestsToDisplay);
@@ -127,6 +142,7 @@ public class UserController {
 //set index method
     private  Double generateIndex(Project project){
         List<Request>requestListOfProject = requestsRepository.findRequestsByProject(project);
+
          if(requestListOfProject.size()==0){
              return 1.0;
          }else {
@@ -155,6 +171,7 @@ public class UserController {
         Authentication authentication = authenticationFacade.getAuthentication();
         Response response = new Response(UUID.randomUUID(),responseType,comment, requestId);
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
+
         responseRepository.saveAndFlush(response);
 
         generateProjectTask(requestId);
@@ -167,16 +184,18 @@ public class UserController {
         List<Response> responsesList = request.getResponseList();
         if(responsesList.size()==5){
 
-            List<Response> responseList=responsesList.stream()
+            List<Response> responseTypeList=responsesList.stream()
                     .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
 
-            if(responsesList.size()<3) {
+            if(responseTypeList.size()==3) {
                 LocalDate start = (LocalDate.now());
                 LocalDate end = (LocalDate.now().plusWeeks(2));
                 ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
                 projectTask.setIndex(request.getIndex());
                 projectTask.setOwner(request.getOwner());
+
                 projectTaskRepository.saveAndFlush(projectTask);
+
             }
         }
     }
@@ -257,6 +276,13 @@ public class UserController {
         listResponseType.add(ResponseType.REJECTED);
 
         return listResponseType;
+    }
+
+    @ModelAttribute("noOfProjectsTasks")
+    public Integer noOfProjects(){
+
+       return projectTaskRepository.findAll().size();
+
     }
 
 
