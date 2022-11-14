@@ -58,8 +58,6 @@ public class UserController {
             }
         }
 
-
-
 // might be not effective method
         for (Request request: requestList) {
            UUID requestID = request.getRequestId();
@@ -71,15 +69,51 @@ public class UserController {
 
             }
         }
-        model.addAttribute("requests", requestsToDisplay);
 
+        boolean displayRequests = true;
+
+        model.addAttribute("requests", requestsToDisplay);
+        model.addAttribute("displayRequests", displayRequests);
      return "UI";
     }
 
     @GetMapping("/myRequests")
     public String getUserRequests(Model model){
         User user = getLoggedUser();
-        model.addAttribute("requests", requestsRepository.findRequestsByUser(user));
+
+        boolean displayMyRequests = true;
+
+         List<Project> projectList = projectsRepository.findAll();
+         List <Request> requestListToDisplay = new ArrayList<>();
+
+
+        for (Project project:projectList) {
+            TreeSet <Request> orderedRequestsList = new TreeSet<>(new UpdateIndexComparator());
+
+            List<Request> requestList = project.getProjectRequestsList().stream()
+                            .filter(request ->request.getOwner().getUsername().equals(user.getUsername())).collect(Collectors.toList());
+
+            orderedRequestsList.addAll(requestList);
+
+            if(!requestList.isEmpty()) {
+
+                requestListToDisplay.add((orderedRequestsList).last());
+            }
+
+        }
+
+        model.addAttribute("myRequests", requestListToDisplay);
+        model.addAttribute("displayMyRequests", displayMyRequests);
+
+        return "UI";
+    }
+
+    @GetMapping("/Statistics")
+    public String getUserProjects(Model model){
+        User user = getLoggedUser();
+        boolean displayStatistics = true;
+        model.addAttribute("projects", projectsRepository.findAll());
+        model.addAttribute("displayStatistics", displayStatistics);
         return "UI";
     }
 
@@ -125,10 +159,16 @@ public class UserController {
 //check if there is any active request
     private boolean checkActiveRequest(Project project) {
         boolean  response =false;
-       List<Request> listToCheck= project.getProjectRequestsList();
-       if(listToCheck.size()<5){
-           response=true;
-       }
+
+       List<Request> listToCheck= project.getProjectRequestsList().stream()
+               .filter(request -> request.getResponseList().size()<5).collect(Collectors.toList());
+
+        for (Request request: listToCheck) {
+            if( request.getProject().getProjectName().equals(project.getProjectName())){
+                response =true;
+            }
+        }
+
        return response;
     }
 
@@ -219,7 +259,6 @@ public class UserController {
                                    @RequestParam("project_id") Project project
     ){
         Authentication authentication = authenticationFacade.getAuthentication();
-
         Request updatedRequest = new Request(UUID.randomUUID(),name,description,project);
         updatedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
         updatedRequest.setIndex(generateUpdateIndex(name));
@@ -278,13 +317,13 @@ public class UserController {
         return listResponseType;
     }
 
+    /** send to frontend no of project Task if user is project member*/
     @ModelAttribute("noOfProjectsTasks")
     public Integer noOfProjects(){
 
        return projectTaskRepository.findAll().size();
 
     }
-
 
 
 }
