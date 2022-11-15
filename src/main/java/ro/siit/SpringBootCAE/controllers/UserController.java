@@ -14,6 +14,7 @@ import ro.siit.SpringBootCAE.repositores.RequestRepository;
 import ro.siit.SpringBootCAE.repositores.ResponseRepository;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,28 +43,35 @@ public class UserController {
     public String getRequests(Model model){
 
         User user = getLoggedUser();
-        List<Request> requestList =requestsRepository.sortRequestsByUser(user);
-        List<Response> responseList =responseRepository.findAll();
 
-        List<Request> requestsToDisplay =requestsRepository.sortRequestsByUser(user);
-      //check for project list
+        List<Request> requestList =requestsRepository.findAll()
+                .stream()
+                .filter(request -> request.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
+
+        List<Response> responseList =responseRepository.findAll().stream()
+                .filter(response -> response.getRequest().getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
+
+
         List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
+
+
+        //check if the request is currently a project task
         for (Request request: requestList) {
             String requestName =request.getRequestName();
             for (ProjectTask projectTask:ProjectTask) {
                 if(requestName.equals(projectTask.getRequestName())){
-                    requestsToDisplay.remove(request);
+                    requestList.remove(request);
                 }
 
             }
         }
 
-// might be not effective method
+        //check if the request has a response from the logged user
         for (Request request: requestList) {
            UUID requestID = request.getRequestId();
             for (Response response:responseList) {
                 if(requestID.equals(response.getRequest().getRequestId()) && user.getUserId().equals(response.getUser().getUserId()) ){
-                    requestsToDisplay.remove(request);
+                    requestList.remove(request);
 
                 }
 
@@ -72,7 +80,7 @@ public class UserController {
 
         boolean displayRequests = true;
 
-        model.addAttribute("requests", requestsToDisplay);
+        model.addAttribute("requests", requestList);
         model.addAttribute("displayRequests", displayRequests);
      return "UI";
     }
@@ -86,8 +94,17 @@ public class UserController {
          List<Project> projectList = projectsRepository.findAll();
          List <Request> requestListToDisplay = new ArrayList<>();
 
+        //check if there is any update of the request and show only that last update
+        checkForUpdates(user, projectList, requestListToDisplay);
 
-        for (Project project:projectList) {
+        model.addAttribute("myRequests", requestListToDisplay);
+        model.addAttribute("displayMyRequests", displayMyRequests);
+
+        return "UI";
+    }
+
+    private static void checkForUpdates(User user, List<Project> projectList, List<Request> requestListToDisplay) {
+        for (Project project: projectList) {
             TreeSet <Request> orderedRequestsList = new TreeSet<>(new UpdateIndexComparator());
 
             List<Request> requestList = project.getProjectRequestsList().stream()
@@ -101,11 +118,6 @@ public class UserController {
             }
 
         }
-
-        model.addAttribute("myRequests", requestListToDisplay);
-        model.addAttribute("displayMyRequests", displayMyRequests);
-
-        return "UI";
     }
 
     @GetMapping("/Statistics")
@@ -153,7 +165,7 @@ public class UserController {
             throw new RuntimeException();
         }
 
-        return new RedirectView("/user/");
+        return new RedirectView("/user/myRequests");
     }
 
 //check if there is any active request
@@ -216,7 +228,7 @@ public class UserController {
 
         generateProjectTask(requestId);
 
-        return new RedirectView("/user/");
+        return new RedirectView("/user/myRequests");
     }
 
     /** generates a duplicate entry in requests table*/
@@ -244,11 +256,20 @@ public class UserController {
 
     @GetMapping("/update/{name}")
     public String updateRequest(Model model, @PathVariable("name") String requestName) {
-       Request requestToEdit = requestsRepository.findRequestsByName(requestName);
-       Project project= requestToEdit.getProject();
+        TreeSet<Request> orderedRequestsList = getRequestsOrderedList(requestName);
+        Request requestToEdit = orderedRequestsList.last();
+        Project project= requestToEdit.getProject();
+
        model.addAttribute("request", requestToEdit);
        model.addAttribute("project", project);
         return "updateForm";
+    }
+
+    private TreeSet<Request> getRequestsOrderedList(String requestName) {
+        List<Request>  requestsList = requestsRepository.findRequestsByName(requestName);
+        TreeSet<Request> orderedRequestsList= new TreeSet<>(new UpdateIndexComparator());
+        orderedRequestsList.addAll(requestsList);
+        return orderedRequestsList;
     }
 
 
@@ -262,15 +283,19 @@ public class UserController {
         Request updatedRequest = new Request(UUID.randomUUID(),name,description,project);
         updatedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
         updatedRequest.setIndex(generateUpdateIndex(name));
+        updatedRequest.setText("UPDATED!" + " " + description);
         requestsRepository.saveAndFlush(updatedRequest);
-        return new RedirectView("/user/");
+        return new RedirectView("/user/Requests");
     }
 
 
     ////set index method
     private double generateUpdateIndex(String requestName){
-        Request request = requestsRepository.findRequestsByName(requestName);
-        return request.getIndex()+0.1;
+
+        TreeSet<Request> orderedRequestsList = getRequestsOrderedList(requestName);
+        Request requestToEdit = orderedRequestsList.last();
+        DecimalFormat df = new DecimalFormat("#.#");
+        return Double.parseDouble(df.format(requestToEdit.getIndex()+0.1));
 
     };
 
@@ -300,8 +325,7 @@ public class UserController {
 
     @ModelAttribute("user")
     public User  displayUser(){
-        User user = getLoggedUser();
-        return user;
+        return  getLoggedUser();
     }
 
 
