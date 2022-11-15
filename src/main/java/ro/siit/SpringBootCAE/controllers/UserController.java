@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+import ro.siit.SpringBootCAE.exceptions.ApiRequestException;
 import ro.siit.SpringBootCAE.models.*;
 import ro.siit.SpringBootCAE.repositores.ProjectRepository;
 import ro.siit.SpringBootCAE.repositores.ProjectTaskRepository;
@@ -48,35 +49,44 @@ public class UserController {
                 .stream()
                 .filter(request -> request.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
 
-        List<Response> responseList =responseRepository.findAll().stream()
-                .filter(response -> response.getRequest().getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
-
 
         List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
 
 
-        //check if the request is currently a project task
-        for (Request request: requestList) {
-            String requestName =request.getRequestName();
-            for (ProjectTask projectTask:ProjectTask) {
-                if(requestName.equals(projectTask.getRequestName())){
-                    requestList.remove(request);
-                }
+            List<Request> listOfProjectTaskToRemove = new ArrayList<>();
 
-            }
-        }
-
-        //check if the request has a response from the logged user
-        for (Request request: requestList) {
-           UUID requestID = request.getRequestId();
-            for (Response response:responseList) {
-                if(requestID.equals(response.getRequest().getRequestId()) && user.getUserId().equals(response.getUser().getUserId()) ){
-                    requestList.remove(request);
+            //check if the request is currently a project task
+            for (Request request : requestList) {
+                String requestName = request.getRequestName();
+                for (ProjectTask projectTask : ProjectTask) {
+                    if (requestName.equals(projectTask.getRequestName())) {
+                        listOfProjectTaskToRemove.add(request);
+                    }
 
                 }
-
             }
-        }
+                    requestList.removeAll(listOfProjectTaskToRemove);
+
+
+            List<Request> listOfRequestsWithAnswerToRemove = new ArrayList<>();
+
+            //check if the request has a response from the logged user
+            for (Request request : requestList) {
+                UUID requestID = request.getRequestId();
+                List<Response> responseList= request.getResponseList();
+                for (Response response : responseList) {
+                    if (requestID.equals(response.getRequest().getRequestId()) && user.getUserId().equals(response.getUser().getUserId())) {
+                        listOfRequestsWithAnswerToRemove.add(request);
+                    }
+
+                }
+            }
+
+                requestList.removeAll(listOfRequestsWithAnswerToRemove);
+
+
+
+
 
         boolean displayRequests = true;
 
@@ -93,6 +103,7 @@ public class UserController {
 
          List<Project> projectList = projectsRepository.findAll();
          List <Request> requestListToDisplay = new ArrayList<>();
+
 
         //check if there is any update of the request and show only that last update
         checkForUpdates(user, projectList, requestListToDisplay);
@@ -121,11 +132,62 @@ public class UserController {
     }
 
     @GetMapping("/Statistics")
-    public String getUserProjects(Model model){
+    public String getUserProjectsInfo(Model model){
         User user = getLoggedUser();
         boolean displayStatistics = true;
-        model.addAttribute("projects", projectsRepository.findAll());
+
+        List<Request> requestList =requestsRepository.findAll()
+                .stream()
+                .filter(request -> request.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
+
+        List<Project> projectList =projectsRepository.findAll()
+                .stream()
+                .filter(project -> project.getProjectMembers().contains(user)).collect(Collectors.toList());
+
+        List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
+
+        List<Request> listOfProjectTask = new ArrayList<>();
+
+        //check if the request is currently a project task
+        for (Request request : requestList) {
+            String requestName = request.getRequestName();
+            for (ProjectTask projectTask : ProjectTask) {
+                if (requestName.equals(projectTask.getRequestName())) {
+                    listOfProjectTask.add(request);
+                }
+
+            }
+
+        }
+
+        model.addAttribute("noOfProjects", listOfProjectTask.size());
+        model.addAttribute("totalNoOfRequests", requestsRepository.findAll().size());
+        model.addAttribute("projects", projectList);
         model.addAttribute("displayStatistics", displayStatistics);
+        return "UI";
+    }
+
+
+    @GetMapping("/ProjectTasks")
+    public String getProjectTasksInfo(Model model){
+        User user = getLoggedUser();
+        boolean displayProjectTasks = true;
+
+        List<Request> listToCheck = requestsRepository.findAll();
+
+        for (Request request: listToCheck) {
+            if(request.getResponseList().size()==5 ){
+                generateProjectTask(request.getRequestId());
+            }
+        }
+
+        List<ProjectTask> projectTasks = projectTaskRepository.findAll().stream()
+                .filter(projectTask -> projectTask.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
+
+
+
+        model.addAttribute("projectTasks", projectTasks);
+        model.addAttribute("displayProjectTasks", displayProjectTasks);
         return "UI";
     }
 
@@ -162,7 +224,7 @@ public class UserController {
             responseList.add(setOwnerResponse(addedRequest));
             requestsRepository.saveAndFlush(addedRequest);
         }else{
-            throw new RuntimeException();
+            throw new ApiRequestException("Please check if there is any proposal on this project that requires your answer or if there is any ongoing Project task active");
         }
 
         return new RedirectView("/user/myRequests");
@@ -209,7 +271,11 @@ public class UserController {
     public String evaluateRequest(Model model, @PathVariable("id") UUID requestId) {
         Optional<Request> optionalRequest = requestsRepository.findById(requestId);
         Request request = optionalRequest.get();
+        String requestName= request.getRequestName();
+
         model.addAttribute("request", request);
+        model.addAttribute("requestName", requestName);
+
         return "evaluate";
     }
 
@@ -224,22 +290,51 @@ public class UserController {
         Response response = new Response(UUID.randomUUID(),responseType,comment, requestId);
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
 
+
+//        generateProjectTask(requestId.getRequestId());
+
         responseRepository.saveAndFlush(response);
 
-        generateProjectTask(requestId);
 
-        return new RedirectView("/user/myRequests");
+        return new RedirectView("/user/");
     }
 
     /** generates a duplicate entry in requests table*/
-    private void generateProjectTask(Request request){
-        List<Response> responsesList = request.getResponseList();
-        if(responsesList.size()==5){
+    private void generateProjectTask(UUID requestId){
 
-            List<Response> responseTypeList=responsesList.stream()
+        Request request = requestsRepository.findRequestsById(requestId);
+
+        List<Response> responsesList = request.getResponseList();
+
+        List<ProjectTask> listToCheck = projectTaskRepository.findAll();
+
+        if(!listToCheck.isEmpty()) {
+            for (ProjectTask project : listToCheck) {
+
+                if (projectTaskRepository.existsById(project.getProject().getProjectId())
+                       ) {
+
+                    List<Response> responseTypeList = responsesList.stream()
+                            .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
+
+                    if (responseTypeList.size() == 3) {
+                        LocalDate start = (LocalDate.now());
+                        LocalDate end = (LocalDate.now().plusWeeks(2));
+                        ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
+                        projectTask.setIndex(request.getIndex());
+                        projectTask.setOwner(request.getOwner());
+
+                        projectTaskRepository.saveAndFlush(projectTask);
+
+                    }
+                }
+            }
+        }else {
+
+            List<Response> responseTypeList = responsesList.stream()
                     .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
 
-            if(responseTypeList.size()==3) {
+            if (responseTypeList.size() == 3) {
                 LocalDate start = (LocalDate.now());
                 LocalDate end = (LocalDate.now().plusWeeks(2));
                 ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
@@ -249,9 +344,10 @@ public class UserController {
                 projectTaskRepository.saveAndFlush(projectTask);
 
             }
-        }
-    }
 
+        }
+
+    }
 
 
     @GetMapping("/update/{name}")
@@ -262,7 +358,7 @@ public class UserController {
 
        model.addAttribute("request", requestToEdit);
        model.addAttribute("project", project);
-        return "updateForm";
+       return "updateForm";
     }
 
     private TreeSet<Request> getRequestsOrderedList(String requestName) {
@@ -284,8 +380,13 @@ public class UserController {
         updatedRequest.setOwner(((CustomUserDetails) authentication.getPrincipal()).getUser());
         updatedRequest.setIndex(generateUpdateIndex(name));
         updatedRequest.setText("UPDATED!" + " " + description);
+        //set the response of the owner
+        List<Response>responseList = new ArrayList<>();
+        updatedRequest.setResponseList(responseList);
+        responseList.add(setOwnerResponse(updatedRequest));
+
         requestsRepository.saveAndFlush(updatedRequest);
-        return new RedirectView("/user/Requests");
+        return new RedirectView("/user/myRequests");
     }
 
 
@@ -322,6 +423,27 @@ public class UserController {
         return projectListToDisplay;
     }
 
+    /** send to frontend only the projects tasks where the User is member*/
+
+    @ModelAttribute("projectsTasks")
+    public List<ProjectTask> displayProjectsTaskList(){
+
+        List<ProjectTask> displayProjectsTaskList = new ArrayList<>();
+        List<ProjectTask> projectList = projectTaskRepository.findAll();
+        User user = getLoggedUser();
+
+        for (ProjectTask project:projectList) {
+            Set<User> users = project.getProject().getProjectMembers();
+            for (User userToCheck: users) {
+                if( userToCheck.getUserId().toString().equals(user.getUserId().toString())){
+                    displayProjectsTaskList.add(project);
+                }
+            }
+        }
+
+        return displayProjectsTaskList;
+    }
+
 
     @ModelAttribute("user")
     public User  displayUser(){
@@ -345,9 +467,9 @@ public class UserController {
     @ModelAttribute("noOfProjectsTasks")
     public Integer noOfProjects(){
 
-       return projectTaskRepository.findAll().size();
+       return (int) projectTaskRepository.findAll().stream()
+               .filter(projectTask -> projectTask.getProject().getProjectMembers().contains(getLoggedUser())).count();
 
     }
-
 
 }

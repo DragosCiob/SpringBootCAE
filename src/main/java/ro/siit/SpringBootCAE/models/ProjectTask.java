@@ -10,6 +10,9 @@ import java.util.UUID;
 public class ProjectTask extends Request{
 
 
+   @Column(name ="projectTask_name",nullable = false, length = 32)
+    private String projectTaskName;
+
     @Column(name ="start_date",nullable = false)
     private LocalDate startDate;
 
@@ -20,6 +23,8 @@ public class ProjectTask extends Request{
         super(id, requestName, text, project);
         this.startDate = startDate;
         this.deadline = deadline;
+
+      projectTaskName = requestName;
     }
 
     public LocalDate getStartDate() {
@@ -38,5 +43,19 @@ public class ProjectTask extends Request{
         this.deadline = deadline;
     }
 
+    public String getProjectTaskName() {
+        return projectTaskName;
+    }
+
+    public void setProjectTaskName(String projectTaskName) {
+        this.projectTaskName = projectTaskName;
+    }
+
     public ProjectTask(){};
+
+    @Override
+    public String toString() {
+
+        return getProject().getProjectName();
+    }
 }

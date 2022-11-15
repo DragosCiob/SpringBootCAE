@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
+
 @Controller
 public class HomePageController {
+
 
     @GetMapping("/")
     public String homePage(Model model){
@@ -19,15 +21,16 @@ public class HomePageController {
     @GetMapping( "/login")
     public String logInPage(Model model){
         model.addAttribute("info", "hello!");
-        return "loginForm";
+        return "singin";
     }
 
     // Login form with error
     @RequestMapping("/login-error")
     public String loginError(Model model) {
         model.addAttribute("loginError", true);
-        return "loginForm";
+        return "singin";
     }
+
 
 
 }

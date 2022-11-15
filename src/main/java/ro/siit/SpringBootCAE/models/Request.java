@@ -30,6 +30,7 @@ public class Request{
     /** relation bidirectional one to many with Response  */
     @OneToMany //(fetch = FetchType.EAGER)??
             (
+                    fetch = FetchType.EAGER,
                     mappedBy ="request",
                     cascade = CascadeType.ALL,
                     orphanRemoval = true
