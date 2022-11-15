@@ -7,15 +7,18 @@
 
 
 <body>
-<h1> Evaluate </h1>
+<h1 style="font-family:Garamond; padding:10px">Evaluate
+    <img src="https://cdn-icons-png.flaticon.com/512/5988/5988314.png" alt="photo" width="50" height="50" align="bottom"/>
+</h1>
 <form method="post" th:action="@{/user/evaluate}">
 
     <select  name="response_type" class="form-control" id="dropDownList">
         <option th:each="responseType :${responseType}" th:value="${responseType}" th:text="${responseType}" ></option>
-    </select>
+    </select><br><br>
 
 <!--  <input type="text" name="response_type" placeholder="response_type">-->
-    <input type="text" name="response_comment" placeholder="response_comment">
+    <label for="response_comment" >Response comment: </label>
+    <input type="text" name="response_comment" id="response_comment" placeholder="response_comment" style="height:80px; width:300px; text-align:left"><br><br>
     <input type="hidden" th:value="${request.requestId}" name="request_id">
 
   <input type="submit" value="Add response">

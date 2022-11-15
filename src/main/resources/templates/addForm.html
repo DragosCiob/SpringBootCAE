@@ -5,17 +5,22 @@
         <title>Add</title>
     </head>
     <body>
-        <h1>Add request</h1>
+        <h1 style="font-family:Garamond; padding:10px">Add request
+        <img src="https://static-00.iconduck.com/assets.00/request-new-icon-256x256-xy8b5mzl.png" alt="photo" width="42" height=40"/>
+        </h1>
         <form method="post" action="/user/add">
 
             <select  name="project_id" class="form-control" id="dropDownList">
                 <option th:each="project :${projects}" th:value="${project.projectId}" th:text="${project.projectName}"></option>
-            </select>
+            </select><br><br>
 
 
 <!--            <input type="text" name="id" placeholder="request Id">-->
-            <input type="text" name="request_name" placeholder="request_name">
-            <input type="text" name="request_description" placeholder="request_description">
+            <label for="request_name_1" >Request name:</label>
+            <input type="text" name="request_name" id="request_name_1" placeholder="request_name" style="width:335px;"><br><br>
+            <label for="request_description">Request description:</label>
+<!--            <input type="text" name="request_description" id="request_description" placeholder="request_description" style="height:80px; width:300px; text-align:left;margin: auto"><br><br>-->
+            <textarea rows="9" cols="70" name="request_description"id="request_description"></textarea>
 <!--            <input type="text" name="user_id" placeholder="user_id">-->
             <input type="submit" value="Add request">
 
