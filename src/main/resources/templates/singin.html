@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!--<!DOCTYPE html>-->
+<html  xmlns:th="http://www.thymeleaf.org" >
 <head>
   <meta charset="UTF-8">
   <title>Simple Login Form Example</title>
-  <link rel="stylesheet"  href="signin.css">
+  <link rel="stylesheet"  th:href="@{/css/signin.css}"/>
+  <link rel="stylesheet" th:href="@{/css/UI.css}"/>
+
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -11,22 +13,30 @@
   <h1>Welcome to Computer-Aided Engineering Team Comunication Application</h1>
 </div>
 <div class="login-form">
-  <form>
+  <p th:if="${loginError}" class="error">Wrong user or password</p>
+
+  <form th:action="@{/login}" method="post">
     <h1>Login</h1>
+
     <div class="content">
       <div class="input-field">
-        <input type="email" placeholder="Email" autocomplete="nope">
+        <input type="text" id="username" name="username" autofocus="autofocus"  placeholder="username"/>
+<!--        <input type="email" placeholder="Email" autocomplete="nope">-->
       </div>
       <div class="input-field">
-        <input type="password" placeholder="Password" autocomplete="new-password">
+        <input type="password" id="password" name="password" placeholder="Password" />
+<!--        <input type="password" placeholder="Password" autocomplete="new-password">-->
       </div>
 <!--      <a href="#" class="link">Forgot Your Password?</a>-->
+<!--    </div>-->
+    <div class="action ">
+      <input class="action button w3-btn w3-button " type="submit" value="Log in" />
+<!--      <button  >Sign in</button>-->
     </div>
-    <div class="action">
-<!--      <button>Register</button>-->
-      <button>Sign in</button>
     </div>
+
   </form>
+
 </div>
   <div style="text-align: center;">
   <img src="https://www.thermoanalytics.com/sites/default/files/styles/site_max/public/2020-02/transient-thermal-simulation-of-sedan_3.png?itok=_fn7MgWC" alt="cfd_photo" align="center" />

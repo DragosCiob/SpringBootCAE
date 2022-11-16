@@ -19,38 +19,39 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-  <span class="w3-bar-item w3-left">Computer Aided Engineer Communication Loop</span>
+  <span class="w3-bar-item w3-left">Computer Aided Engineer </span>
+  <div>
+    <a th:href="@{/logout}" class="logout w3-button">Logout</a>
+  </div>
 </div>
 
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <div class="w3-container w3-row">
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:200px;" id="mySidebar"><br>
 
     <div class="w3-col s8 w3-bar" >
       <span>Welcome, <strong th:text="${user.userFirstName}">USER</strong></span><br>
     </div>
-  </div>
+
   <hr>
-  <div class="w3-container">
-    <h5>Project Team</h5>
+  <div class="w3-container side-menu w3-gray">
+    <h5>Side Menu</h5>
   </div>
   <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Lead Requests</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  V&V</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Mechanical</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  CFD</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  NVH</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i></i>  Logout</a>
+
+    <a th:href="@{/user/}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-exclamation-circle"></i>New Requests</a>
+    <a th:href="@{myRequests}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-database"></i>My Requests</a>
+    <a th:href="@{Statistics}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bar-chart-o"></i>Projects Overview</a>
+    <a th:href="@{ProjectTasks}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users"></i></i>Projects Tasks</a>
+
   </div>
+
+
 </nav>
 
 
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+<div class="w3-main " style="margin-left:200px;margin-top:43px;">
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
@@ -59,48 +60,48 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <div class="w3-bar">
 
-    <form action="#" th:action="@{add}">
-      <button class="w3-bar-item w3-button w3-amber w3-padding-16" style="width:25%">
+    <a   th:href="@{/user/}">
+      <button   class="w3-bar-item w3-button w3-amber w3-padding-16" style="width:25%">
         <div class="w3-left"><i class="fa fa-exclamation-circle w3-xxxlarge"></i></div>
+<!--        <div class="w3-right">-->
+<!--          <h4 th:text="${noOfRequests}">CFD</h4>-->
+<!--        </div>-->
 
-  <!--      <div class="w3-right">-->
-  <!--        <h3>CFD</h3>-->
-  <!--      </div>-->
 
-        <div class="w3-clear"></div>
         <h4>New Requests</h4>
       </button>
-    </form>
+    </a>
 
-    <form action="#" th:action="@{myRequests}">
-    <button class="w3-bar-item w3-button w3-blue w3-padding-16" style="width:25%" >
+
+
+    <a th:href="@{myRequests}">
+    <button class="w3-bar-item w3-button  w3-teal  w3-padding-16" style="width:25%" >
       <div class="w3-left"><i class="fa fa-database w3-xxxlarge"></i></div>
-<!--      <div class="w3-right">-->
-<!--        <h3>Total number of my requests</h3>-->
-<!--      </div>-->
-      <div class="w3-clear"></div>
+
       <h4>My Requests</h4>
     </button>
-    </form>
+    </a>
 
-
-    <button class="w3-bar-item w3-button w3-teal w3-padding-16" style="width:25%">
+    <a th:href="@{Statistics}">
+    <button class="w3-bar-item w3-button w3-blue w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-bar-chart-o w3-xxxlarge"></i></div>
-      <div class="w3-right">
-        <h3 th:text="${projects.size}">Statistics</h3>
-      </div>
-      <div class="w3-clear"></div>
+<!--      <div class="w3-right">-->
+<!--        <h4 th:text="${projects.size}">Statistics</h4>-->
+<!--      </div>-->
+
       <h4>Projects Overview</h4>
     </button>
+    </a>
 
+    <a th:href="@{ProjectTasks}">
     <button class="w3-bar-item w3-button w3-orange w3-padding-16" style="width:25%">
       <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-      <div class="w3-right">
-        <h3 th:text="${noOfProjectsTasks}">number of tasks</h3>
-      </div>
-      <div class="w3-clear"></div>
+<!--      <div class="w3-right">-->
+<!--        <h4 th:text="${noOfProjectsTasks}">number of tasks</h4>-->
+<!--      </div>-->
       <h4>Projects Tasks</h4>
     </button>
+    </a>
 
   </div>
 
@@ -108,39 +109,133 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
       <div class="w3-twothird">
         <h5 > </h5>
-
-        <table class="w3-table w3-striped w3-white" >
-          <thead>
+        <!-- !!!!!!!!!!!!!!! display all the requests that need user evaluation-->
+        <table  th:if="${displayRequests == true}"   class="w3-table w3-striped w3-white  w3-border" >
+          <thead  >
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">Request Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Project</th>
-            <th scope="col">Owner</th>
+            <th class="w3-border w3-center" scope="col">#</th>
+            <th class="w3-border w3-center" scope="col">Request Name</th>
+            <th class="w3-border w3-center" scope="col">index</th>
+            <th class="w3-border w3-center" scope="col">Project</th>
+            <th class="w3-border w3-center" scope="col">Owner</th>
+            <th class=" w3-center" scope="col">Description</th>
           </tr>
           </thead>
-          <tbody>
-          <tr th:each="request, iter:${requests}"  >
-            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large"></i> >1 </th>
-            <td  th:text="${request.requestName}" ></td>
-            <td th:text="${request.text}" ></td>
-            <td th:text="${request.project}" ></td>
-            <td th:text="${request.owner}" ></td>
-            <td>
+          <tbody >
+          <tr th:each="request, iter:${requests}" class="w3-border w3-center" >
+            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large w3-center "></i> >1 </th>
+            <td class="w3-border w3-center" th:text="${request.requestName}" ></td>
+            <td class="w3-border w3-center" th:text="${request.index}" ></td>
+            <td class="w3-border w3-center" th:text="${request.project}" ></td>
+            <td class="w3-border w3-center" th:text="${request.owner}" ></td>
+            <td class=" w3-left" th:text="${request.text}" ></td>
+            <td >
 
-              <a th:unless="${request.owner == 'user'}"  id="evaluate"  class="btn btn-outline-primary" th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
-              <a th:if="${request.owner == 'user'}" id="update" class="btn btn-outline-primary" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>
+              <a th:unless="${request.owner == 'user'}"  id="evaluate"  class="btn btn-outline-primary w3-button w3-border " th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>
+<!--              <a th:if="${request.owner == 'user'}" id="update" class="btn btn-outline-primary" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>-->
 
             </td>
           </tr>
           </tbody>
         </table>
 
+
+        <!-- !!!!!!!!!!!!!!! display all the requests logged user own-->
+
+        <table  th:if="${displayMyRequests == true}"   class="w3-table w3-striped w3-white  w3-border" >
+          <thead  >
+          <tr>
+            <th class="w3-border w3-center" scope="col">#</th>
+            <th class="w3-border w3-center" scope="col">Request Name</th>
+            <th class="w3-border w3-center" scope="col">Project</th>
+            <th class="w3-border w3-center" scope="col">index</th>
+            <th class=" w3-center" scope="col">Description</th>
+          </tr>
+          </thead>
+          <tbody >
+          <tr th:each="request, iter:${myRequests}" class="w3-border w3-center" >
+            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large w3-center "></i> >1 </th>
+            <td class="w3-border w3-center" th:text="${request.requestName}" ></td>
+            <td class="w3-border w3-center" th:text="${request.project}" ></td>
+            <td class="w3-border w3-center" th:text="${request.index}" ></td>
+            <td class=" w3-left" th:text="${request.text}" ></td>
+            <td >
+
+<!--              <a th:unless="${request.owner == 'user'}"  id="evaluate"  class="btn btn-outline-primary w3-button w3-border " th:href="@{/user/evaluate/{id}(id=${request.requestId})}">evaluate</a>-->
+                  <a  id="update" class="btn btn-outline-primary w3-button w3-border" th:href="@{/user/update/{name}(name=${request.requestName})}">update</a>
+
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+
+        <!-- display table with some project statistics-->
+
+        <table  th:if="${displayStatistics == true}"   class="w3-table w3-striped w3-white  w3-border" >
+          <thead  >
+          <tr>
+            <th class="w3-border w3-center" scope="col">#</th>
+            <th class="w3-border w3-center" scope="col">Project Name</th>
+            <th class="w3-border w3-center" scope="col"> Total No. Project tasks</th>
+<!--            <th class="w3-border w3-center" scope="col">Project tasks</th>-->
+          </tr>
+          </thead>
+          <tbody >
+          <tr th:each="project, iter:${projects}" class="w3-border w3-center" >
+            <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large w3-center "></i> >1 </th>
+            <td class="w3-border w3-center" th:text="${project.projectName}" ></td>
+            <td class="w3-border w3-center" th:text="${project.projectRequestsList.size}" ></td>
+<!--            <td class="w3-border w3-center" th:text="${noOfProjects}" ></td>-->
+
+          </tr>
+          </tbody>
+        </table>
+
     </div>
 
+    <!-- display project tasks-->
+
+    <table  th:if="${displayProjectTasks == true}"   class="w3-table w3-striped w3-white  w3-border" >
+      <thead  >
+      <tr>
+        <th class="w3-border w3-center" scope="col">#</th>
+        <th class="w3-border w3-center" scope="col">Project Name</th>
+        <th class="w3-border w3-center" scope="col"> Request name</th>
+        <th class="w3-border w3-center" scope="col">Start Date</th>
+        <th class="w3-border w3-center" scope="col">Deadline</th>
+      </tr>
+      </thead>
+      <tbody >
+      <tr th:each="project , iter:${projectsTasks}" class="w3-border w3-center" >
+        <th scope="row" th:text="${iter.index} + 1" <i class="fa fa-bookmark w3-text-blue w3-large w3-center "></i> >1 </th>
+        <td class="w3-border w3-center" th:text="${project}" ></td>
+        <td class="w3-border w3-center" th:text="${project.projectTaskName}" ></td>
+        <td class="w3-border w3-center" th:text="${project.startDate}" ></td>
+        <td class="w3-border w3-center" th:text="${project.deadline}" ></td>
+
+
+
+      </tr>
+      </tbody>
+    </table>
+
+
+
   </div>
+
+
+
+  </div>
+
+
+
   <!-- Footer -->
-  <footer class="w3-container w3-padding-16 w3-light-grey">
+  <footer class=" w3-container w3-padding-16 w3-light-grey">
+
+      <div class="newRequest w3-hover-border-light-green " >
+    <a  th:if="${displayRequests == true}" th:href="@{add}" class="w3-button new-Request w3-bar-item w3-button .w3-green w3-padding-16 ">insert new proposal</a>
+      </div>
     <h4></h4>
     <p></p>
   </footer>
@@ -150,34 +245,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 
 
-<script>
-<<script !src="">
-</script>>
 
-<script>
-// Get the Sidebar
-var mySidebar = document.getElementById("mySidebar");
-
-// Get the DIV with overlay effect
-var overlayBg = document.getElementById("myOverlay");
-
-// Toggle between showing and hiding the sidebar, and add overlay effect
-function w3_open() {
-  if (mySidebar.style.display === 'block') {
-    mySidebar.style.display = 'none';
-    overlayBg.style.display = "none";
-  } else {
-    mySidebar.style.display = 'block';
-    overlayBg.style.display = "block";
-  }
-}
-
-// Close the sidebar with the close button
-function w3_close() {
-  mySidebar.style.display = "none";
-  overlayBg.style.display = "none";
-}
-</script>
 
 </body>
 </html>
