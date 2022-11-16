@@ -19,12 +19,16 @@ public class ProjectTask extends Request{
     @Column(name ="deadline",nullable = false)
     private LocalDate deadline;
 
+    @Column(name ="status",nullable = false)
+    boolean ongoing;
+
     public ProjectTask(UUID id, String requestName, String text, Project project, LocalDate startDate, LocalDate deadline) {
         super(id, requestName, text, project);
         this.startDate = startDate;
         this.deadline = deadline;
 
       projectTaskName = requestName;
+      ongoing=true;
     }
 
     public LocalDate getStartDate() {
@@ -49,6 +53,14 @@ public class ProjectTask extends Request{
 
     public void setProjectTaskName(String projectTaskName) {
         this.projectTaskName = projectTaskName;
+    }
+
+    public boolean isOngoing() {
+        return ongoing;
+    }
+
+    public void setOngoing(boolean ongoing) {
+        this.ongoing = ongoing;
     }
 
     public ProjectTask(){};

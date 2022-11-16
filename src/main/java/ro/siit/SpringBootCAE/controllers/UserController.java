@@ -263,12 +263,25 @@ public class UserController {
     @GetMapping("/evaluate/{id}")
     public String evaluateRequest(Model model, @PathVariable("id") UUID requestId) {
 
-        Optional<Request> optionalRequest = requestsRepository.findById(requestId);
-        Request request = optionalRequest.get();
-        String requestName= request.getRequestName();
+        Request request = requestsRepository.findRequestsById(requestId);
+       List <Request> list = requestsRepository.findRequestsByName(request.getRequestName());
 
-        model.addAttribute("request", request);
-        model.addAttribute("requestName", requestName);
+       TreeSet<Request> set = new TreeSet<>( new UpdateIndexComparator());
+        set.addAll(list);
+
+        if(!set.isEmpty()){
+          if(set.last().getIndex()>request.getIndex()){
+
+              throw new ApiRequestException("Please be sure that you make evaluation to th last update, check also all the previous status");
+          }else{
+
+              String requestName= request.getRequestName();
+              model.addAttribute("request", request);
+              model.addAttribute("requestName", requestName);
+
+          }
+
+        }
 
         return "evaluate";
     }
@@ -443,13 +456,5 @@ public class UserController {
         return listResponseType;
     }
 
-    /** send to frontend no of project Task if user is project member*/
-    @ModelAttribute("noOfProjectsTasks")
-    public Integer noOfProjects(){
-
-       return (int) projectTaskRepository.findAll().stream()
-               .filter(projectTask -> projectTask.getProject().getProjectMembers().contains(getLoggedUser())).count();
-
-    }
 
 }

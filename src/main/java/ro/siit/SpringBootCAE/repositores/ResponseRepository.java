@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface ResponseRepository extends JpaRepository<Response, UUID>{
 
-    @Query(value="SELECT r FROM Responses r WHERE r.id=?1" ,nativeQuery = false)
-    List<Response> findResponsesByRequest(UUID requestId);
-
+//    @Query(value="SELECT rs FROM Responses rs JOIN Requests r ON r.requestId=rs.requestId WHERE rs.requestId=?1" ,nativeQuery = false)
+//    List<Response> findResponsesByRequest(UUID requestId);
+//
 
 }

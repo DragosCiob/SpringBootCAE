@@ -58,7 +58,9 @@ public class ApplicationSecurityConfig {
 //                                .defaultSuccessUrl("/user/")
                                 .permitAll()
                                 .and()
-                                .logout().logoutSuccessUrl("/login").permitAll();
+                                .logout()
+                                .logoutUrl("/logout")
+                                .logoutSuccessUrl("/login").permitAll();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

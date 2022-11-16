@@ -7,13 +7,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ro.siit.SpringBootCAE.models.*;
-import ro.siit.SpringBootCAE.repositores.ProjectRepository;
-import ro.siit.SpringBootCAE.repositores.RequestRepository;
-import ro.siit.SpringBootCAE.repositores.ResponseRepository;
-import ro.siit.SpringBootCAE.repositores.UserRepository;
+import ro.siit.SpringBootCAE.repositores.*;
 import ro.siit.SpringBootCAE.services.IAuthenticationFacade;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/caeLead")
@@ -31,14 +29,63 @@ public class CaeLeadController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectTaskRepository projectTaskRepository;
+
 
     @Autowired
     private IAuthenticationFacade authenticationFacade;
 
+
     @GetMapping("/")
     public String getRequests(Model model){
+
         User user = getLoggedUser();
-        model.addAttribute("requests", requestsRepository.sortRequestsByUser(user));
+
+        List<Request> requestList =requestsRepository.findAll()
+                .stream()
+                .filter(request -> request.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
+
+
+        List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
+
+
+        List<Request> listOfProjectTaskToRemove = new ArrayList<>();
+
+        //check if the request is currently a project task
+        for (Request request : requestList) {
+            String requestName = request.getRequestName();
+            for (ProjectTask projectTask : ProjectTask) {
+                if (requestName.equals(projectTask.getRequestName())) {
+                    listOfProjectTaskToRemove.add(request);
+                }
+
+            }
+        }
+        requestList.removeAll(listOfProjectTaskToRemove);
+
+
+        List<Request> listOfRequestsWithAnswerToRemove = new ArrayList<>();
+
+        //check if the request has a response from the logged user
+        for (Request request : requestList) {
+            UUID requestID = request.getRequestId();
+            List<Response> responseList= request.getResponseList();
+            for (Response response : responseList) {
+                if (requestID.equals(response.getRequest().getRequestId()) && user.getUserId().equals(response.getUser().getUserId())) {
+                    listOfRequestsWithAnswerToRemove.add(request);
+                }
+
+            }
+        }
+
+        requestList.removeAll(listOfRequestsWithAnswerToRemove);
+
+
+        boolean displayRequests = true;
+
+        model.addAttribute("requests", requestList);
+        model.addAttribute("displayRequests", displayRequests);
         return "caeUI";
     }
 
@@ -46,6 +93,54 @@ public class CaeLeadController {
         Authentication authentication = authenticationFacade.getAuthentication();
         return ((CustomUserDetails) authentication.getPrincipal()).getUser();
     }
+
+
+    @GetMapping("/ProjectTasks")
+    public String getProjectTasksInfo(Model model){
+        User user = getLoggedUser();
+        boolean displayProjectTasks = true;
+
+        List<ProjectTask> projectTasks = projectTaskRepository.findAll();
+        List<ProjectTask> projectTasksToDisplay = new ArrayList<>();
+        for (ProjectTask task:projectTasks) {
+            if(task.getOwner().equals(user)){
+                if(task.isOngoing()) {
+                    projectTasksToDisplay.add(task);
+                }
+            }
+        }
+
+
+
+        model.addAttribute("projectTasksToDisplay", projectTasksToDisplay);
+        model.addAttribute("displayProjectTasks", displayProjectTasks);
+        return "caeUI";
+    }
+
+
+    @GetMapping("/ProjectTasks/{id}")
+    public RedirectView deleteTask(Model model, @PathVariable("id") UUID taskId) {
+
+        projectTaskRepository.deleteById(taskId);
+
+        return new RedirectView(" ");
+    }
+
+
+
+
+    /** set project task ongoing false*/
+//    @PostMapping("/ProjectTasks/")
+//    public RedirectView setProjectTaskStatus(Model model,
+//                                    @RequestParam("projectTaskName") UUID id
+//                                    ){
+//
+//        ProjectTask project = projectTaskRepository.getReferenceById(id);
+//        project.setOngoing(false);
+//        projectTaskRepository.saveAndFlush(project);
+//
+//        return new RedirectView("/caeLead/ProjectTasks");
+//    }
 
 
     @GetMapping("/createProject")
@@ -117,7 +212,13 @@ public class CaeLeadController {
         }
     }
 
-    /** method to send User info to frontend */
+
+
+
+
+
+
+        /** method to send User info to frontend */
     @ModelAttribute("user")
     public User  displayUser(){
         User user = getLoggedUser();
@@ -149,6 +250,10 @@ public class CaeLeadController {
         return userRepository.findByRole(Team.NVH);
     }
 
+
+
+    /** send to frontend only the projects where the User is member*/
+
     @ModelAttribute("projects")
     public List<Project> displayProjectsList(){
 
@@ -167,6 +272,44 @@ public class CaeLeadController {
 
         return projectListToDisplay;
     }
+
+    /** send to frontend only the projects tasks where the User is member*/
+
+    @ModelAttribute("projectsTasks")
+    public List<ProjectTask> displayProjectsTaskList(){
+
+        List<ProjectTask> displayProjectsTaskList = new ArrayList<>();
+        List<ProjectTask> projectList = projectTaskRepository.findAll();
+        User user = getLoggedUser();
+
+        for (ProjectTask project:projectList) {
+            Set<User> users = project.getProject().getProjectMembers();
+            for (User userToCheck: users) {
+                if( userToCheck.getUserId().toString().equals(user.getUserId().toString())){
+                    displayProjectsTaskList.add(project);
+                }
+            }
+        }
+
+        return displayProjectsTaskList;
+    }
+
+
+
+    /** send to frontend only the projects where the User is member*/
+
+    @ModelAttribute("responseType")
+    public Set<ResponseType> displayResponseType(){
+
+        Set<ResponseType> listResponseType = new HashSet<>();
+        listResponseType.add(ResponseType.APPROVED);
+        listResponseType.add(ResponseType.REJECTED);
+
+        return listResponseType;
+    }
+
+
+
 
 
 }

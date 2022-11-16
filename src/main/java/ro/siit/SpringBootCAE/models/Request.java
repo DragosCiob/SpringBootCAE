@@ -2,6 +2,8 @@ package ro.siit.SpringBootCAE.models;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name="Requests")
@@ -109,6 +111,20 @@ public class Request{
 
     public void setIndex(Double index) {
         this.index = index;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return requestId.equals(request.requestId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(requestId);
     }
 
     public Request(){};
