@@ -50,7 +50,7 @@ public class UserController {
                 .filter(request -> request.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
 
 
-        List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
+            List<ProjectTask> ProjectTask = projectTaskRepository.findAll();
 
 
             List<Request> listOfProjectTaskToRemove = new ArrayList<>();
@@ -94,6 +94,7 @@ public class UserController {
         model.addAttribute("displayRequests", displayRequests);
      return "UI";
     }
+
 
     @GetMapping("/myRequests")
     public String getUserRequests(Model model){
@@ -172,14 +173,6 @@ public class UserController {
     public String getProjectTasksInfo(Model model){
         User user = getLoggedUser();
         boolean displayProjectTasks = true;
-
-        List<Request> listToCheck = requestsRepository.findAll();
-
-        for (Request request: listToCheck) {
-            if(request.getResponseList().size()==5 ){
-                generateProjectTask(request.getRequestId());
-            }
-        }
 
         List<ProjectTask> projectTasks = projectTaskRepository.findAll().stream()
                 .filter(projectTask -> projectTask.getProject().getProjectMembers().contains(user)).collect(Collectors.toList());
@@ -269,6 +262,7 @@ public class UserController {
 
     @GetMapping("/evaluate/{id}")
     public String evaluateRequest(Model model, @PathVariable("id") UUID requestId) {
+
         Optional<Request> optionalRequest = requestsRepository.findById(requestId);
         Request request = optionalRequest.get();
         String requestName= request.getRequestName();
@@ -291,50 +285,35 @@ public class UserController {
         response.setUser(((CustomUserDetails) authentication.getPrincipal()).getUser());
 
 
-//        generateProjectTask(requestId.getRequestId());
-
         responseRepository.saveAndFlush(response);
-
+        generateProjectTask(requestId.getRequestId(), responseType);
 
         return new RedirectView("/user/");
     }
 
     /** generates a duplicate entry in requests table*/
-    private void generateProjectTask(UUID requestId){
+    private void generateProjectTask(UUID requestId, ResponseType responseType){
 
         Request request = requestsRepository.findRequestsById(requestId);
+        List<Response> responseList = request.getResponseList();
+        Set<Response> responseSet = new HashSet<>(responseList);
 
-        List<Response> responsesList = request.getResponseList();
+        //Persistence Bag????
+        Set<Response> items = new HashSet<>();
+        Set<Response> filteredList = responseList.stream()
+                .filter(response -> !items.add(response))
+                .collect(Collectors.toSet());
 
-        List<ProjectTask> listToCheck = projectTaskRepository.findAll();
 
-        if(!listToCheck.isEmpty()) {
-            for (ProjectTask project : listToCheck) {
 
-                if (projectTaskRepository.existsById(project.getProject().getProjectId())
-                       ) {
+        if(filteredList.size()==4){
 
-                    List<Response> responseTypeList = responsesList.stream()
-                            .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
+            Set<ResponseType> responseTypeSet = items.stream().map(Response::getResponseType)
+                    .filter(responseType1 -> responseType1==ResponseType.APPROVED).collect(Collectors.toSet());
 
-                    if (responseTypeList.size() == 3) {
-                        LocalDate start = (LocalDate.now());
-                        LocalDate end = (LocalDate.now().plusWeeks(2));
-                        ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
-                        projectTask.setIndex(request.getIndex());
-                        projectTask.setOwner(request.getOwner());
+                    responseTypeSet.add(responseType);
 
-                        projectTaskRepository.saveAndFlush(projectTask);
-
-                    }
-                }
-            }
-        }else {
-
-            List<Response> responseTypeList = responsesList.stream()
-                    .filter(response -> response.getResponseType() == ResponseType.APPROVED).collect(Collectors.toList());
-
-            if (responseTypeList.size() == 3) {
+            if (responseSet.size() >= 3) {
                 LocalDate start = (LocalDate.now());
                 LocalDate end = (LocalDate.now().plusWeeks(2));
                 ProjectTask projectTask = new ProjectTask(request.getRequestId(), request.getRequestName(), request.getText(), request.getProject(), start, end);
@@ -344,10 +323,11 @@ public class UserController {
                 projectTaskRepository.saveAndFlush(projectTask);
 
             }
-
         }
 
     }
+
+
 
 
     @GetMapping("/update/{name}")
