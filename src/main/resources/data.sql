@@ -94,31 +94,6 @@ INSERT INTO responses(
 
 
 
---  populate requests table second
-
-    INSERT INTO requests(
-    	request_id, request_index, request_name, request_description, request_owner, project_id)
-    	VALUES ('b8c49b5c-349a-44fa-a278-1585694b2f0e', '2.0', 'Daimler-Fuse box', 'Boundary conditions: .....................    |3DData on this path:..........',
-    	 '8410c252-8ec3-44e4-9c93-35775f32c687', '0e9379fa-1332-4eed-9145-6066953c503c');
-
---  populate response table
-INSERT INTO responses(
-	response_id, response_comment, response_type, request_id, response_owner)
-	VALUES ('da06fbf5-50b6-40b6-a36f-da0875e5583b', 'Approved', 'APPROVED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '8410c252-8ec3-44e4-9c93-35775f32c687');
-
-INSERT INTO responses(
-	response_id, response_comment, response_type, request_id, response_owner)
-	VALUES ('7e1fbd9d-b41f-4e3a-be5f-c076df1a454d', 'Approved', 'APPROVED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '38909909-1713-40dc-977b-a46f291ed303');
-
-INSERT INTO responses(
-	response_id, response_comment, response_type, request_id, response_owner)
-	VALUES ('938f091f-aa7c-4311-87ae-7bf1b8c6aa06', 'Bad idea!', 'REJECTED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '0ed7f953-6bc3-4d46-b90a-02a6519ede4a');
-
-INSERT INTO responses(
-	response_id, response_comment, response_type, request_id, response_owner)
-	VALUES ('26d7b945-b408-4bfe-87c8-1780671a9da5', 'Bad idea!', 'REJECTED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '70edb7cf-4138-4eb9-956c-8df0221e7de0');
---
-
 
 --   populate projects table:BMW
 
@@ -201,3 +176,26 @@ INSERT INTO responses(
         	project_id, user_id)
         	VALUES ('5241c467-7206-43d0-b5ba-136597e0a92a', '70edb7cf-4138-4eb9-956c-8df0221e7de0');
 
+--  populate requests table second
+
+    INSERT INTO requests(
+    	request_id, request_index, request_name, request_description, request_owner, project_id)
+    	VALUES ('b8c49b5c-349a-44fa-a278-1585694b2f0e', '2.0', 'VW-Fuse box', 'Boundary conditions: .....................    |3DData on this path:..........',
+    	 '8410c252-8ec3-44e4-9c93-35775f32c687', '5241c467-7206-43d0-b5ba-136597e0a92a');
+
+--  populate response table
+INSERT INTO responses(
+	response_id, response_comment, response_type, request_id, response_owner)
+	VALUES ('da06fbf5-50b6-40b6-a36f-da0875e5583b', 'Approved', 'APPROVED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '8410c252-8ec3-44e4-9c93-35775f32c687');
+
+INSERT INTO responses(
+	response_id, response_comment, response_type, request_id, response_owner)
+	VALUES ('7e1fbd9d-b41f-4e3a-be5f-c076df1a454d', 'Approved', 'APPROVED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '38909909-1713-40dc-977b-a46f291ed303');
+
+INSERT INTO responses(
+	response_id, response_comment, response_type, request_id, response_owner)
+	VALUES ('938f091f-aa7c-4311-87ae-7bf1b8c6aa06', 'Bad idea!', 'REJECTED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '0ed7f953-6bc3-4d46-b90a-02a6519ede4a');
+
+INSERT INTO responses(
+	response_id, response_comment, response_type, request_id, response_owner)
+	VALUES ('26d7b945-b408-4bfe-87c8-1780671a9da5', 'Bad idea!', 'REJECTED', 'b8c49b5c-349a-44fa-a278-1585694b2f0e', '70edb7cf-4138-4eb9-956c-8df0221e7de0');
